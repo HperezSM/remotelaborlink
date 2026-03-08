@@ -1,8 +1,9 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { X, Shield, ArrowRight, CheckCircle2 } from "lucide-react";
+import { X, Shield, ArrowRight, Zap, Target, BarChart3, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
@@ -16,16 +17,10 @@ const problems = [
 const vettingSteps = ["Application Screen", "Technical Assessment", "Live Interview", "Reference Check", "Portal Upload"];
 
 const benefits = [
-  { icon: "⚡", title: "72-Hour Delivery", desc: "Get shortlisted, vetted candidates within 3 business days." },
-  { icon: "🎯", title: "Culture-First Matching", desc: "We assess communication style, work ethic, and team fit — not just skills." },
-  { icon: "📊", title: "Full Transparency", desc: "Track every step through your private portal. No black boxes." },
-  { icon: "🔄", title: "30-Day Guarantee", desc: "If a placement doesn't work out, we replace them at no extra cost." },
-];
-
-const caseStudies = [
-  { company: "ScaleOps Inc.", result: "Hired 3 senior devs in 5 days", metric: "6 weeks → 5 days", quote: "Remote LaborLink cut our hiring timeline from 6 weeks to 3 days." },
-  { company: "GrowthBase", result: "100% retention after 12 months", metric: "0% turnover", quote: "We've retained every placement for over a year." },
-  { company: "BuildRight", result: "Filled 5 roles in 2 weeks", metric: "5 hires in 14 days", quote: "The portal changed everything." },
+  { icon: Zap, title: "72-Hour Delivery", desc: "Get shortlisted, vetted candidates within 3 business days." },
+  { icon: Target, title: "Culture-First Matching", desc: "We assess communication style, work ethic, and team fit — not just skills." },
+  { icon: BarChart3, title: "Full Transparency", desc: "Track every step through your private portal. No black boxes." },
+  { icon: RefreshCw, title: "30-Day Guarantee", desc: "If a placement doesn't work out, we replace them at no extra cost." },
 ];
 
 const ForCompanies = () => (
@@ -76,8 +71,10 @@ const ForCompanies = () => (
         <h2 className="font-display text-5xl md:text-6xl mb-14">WHY COMPANIES CHOOSE US</h2>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {benefits.map((b) => (
-            <motion.div key={b.title} variants={fadeUp} className="card-surface p-8 hover:border-primary/40 hover:-translate-y-1 transition-all duration-300">
-              <div className="text-3xl mb-4">{b.icon}</div>
+            <motion.div key={b.title} variants={fadeUp} className="card-surface p-8 hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all">
+                <b.icon size={24} className="text-primary" />
+              </div>
               <h3 className="font-display text-2xl mb-3">{b.title}</h3>
               <p className="text-[15px] text-muted-foreground leading-relaxed">{b.desc}</p>
             </motion.div>
@@ -105,23 +102,8 @@ const ForCompanies = () => (
       </div>
     </section>
 
-    {/* Case Studies */}
-    <section className="py-24">
-      <div className="container mx-auto px-4">
-        <span className="section-tag">Results</span>
-        <h2 className="font-display text-5xl md:text-6xl mb-14">REAL RESULTS</h2>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {caseStudies.map((cs) => (
-            <motion.div key={cs.company} variants={fadeUp} className="card-surface p-8 border-l-[3px] border-l-primary">
-              <div className="font-display text-3xl text-primary mb-2">{cs.metric}</div>
-              <h3 className="font-body font-bold text-foreground mb-1">{cs.company}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{cs.result}</p>
-              <p className="text-sm italic text-foreground/60">"{cs.quote}"</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
+    {/* Testimonials (DB-driven only) */}
+    <TestimonialsSection />
 
     {/* Portal */}
     <section className="py-24 bg-primary text-primary-foreground">
