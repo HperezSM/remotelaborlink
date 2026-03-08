@@ -125,7 +125,9 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {whyLatam.map((item) => (
                 <motion.div key={item.title} variants={fadeUp} className="card-surface p-8 hover:border-primary/40 hover:-translate-y-1 transition-all duration-300">
-                  <div className="text-3xl mb-4">{item.emoji}</div>
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                    <item.icon size={24} className="text-primary" />
+                  </div>
                   <h3 className="font-display text-2xl mb-3">{item.title}</h3>
                   <p className="text-[15px] text-muted-foreground leading-relaxed">{item.desc}</p>
                 </motion.div>
