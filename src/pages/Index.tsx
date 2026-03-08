@@ -24,9 +24,9 @@ const trustItems = [
 ];
 
 const whyLatam = [
-  { emoji: "🕐", title: "Time Zone Alignment", desc: "LATAM professionals work your hours. Real-time collaboration, no overnight handoffs." },
-  { emoji: "🗣️", title: "English Proficiency", desc: "Every candidate passes rigorous English assessments. Written and verbal fluency required." },
-  { emoji: "💰", title: "Cost Efficiency", desc: "Access senior-level talent at 40-60% lower cost than US equivalents without sacrificing quality." },
+  { icon: Clock, title: "Time Zone Alignment", desc: "LATAM professionals work your hours. Real-time collaboration, no overnight handoffs." },
+  { icon: Zap, title: "English Proficiency", desc: "Every candidate passes rigorous English assessments. Written and verbal fluency required." },
+  { icon: Shield, title: "Cost Efficiency", desc: "Access senior-level talent at 40-60% lower cost than US equivalents without sacrificing quality." },
 ];
 
 const vettingSteps = ["Application Screen", "Technical Assessment", "Live Interview", "Reference Check", "Portal Upload"];
