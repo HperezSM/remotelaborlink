@@ -39,10 +39,10 @@ const portalFeatures = [
 ];
 
 const portalCandidates = [
-  { initials: "MC", name: "Maria C.", role: "Full-Stack Developer", status: "Vetted", statusColor: "bg-green-500/20 text-green-400" },
-  { initials: "JR", name: "Juan R.", role: "Project Manager", status: "Vetted", statusColor: "bg-green-500/20 text-green-400" },
-  { initials: "AS", name: "Ana S.", role: "UX/UI Designer", status: "Interview Requested", statusColor: "bg-primary/20 text-primary" },
-  { initials: "DL", name: "Diego L.", role: "Scrum Master", status: "Vetted", statusColor: "bg-green-500/20 text-green-400" },
+  { initials: "MC", name: "Maria C.", role: "Full-Stack Developer", status: "Vetted", statusClass: "status-active" },
+  { initials: "JR", name: "Juan R.", role: "Project Manager", status: "Vetted", statusClass: "status-active" },
+  { initials: "AS", name: "Ana S.", role: "UX/UI Designer", status: "Interview Requested", statusClass: "status-screening" },
+  { initials: "DL", name: "Diego L.", role: "Scrum Master", status: "Vetted", statusClass: "status-active" },
 ];
 
 const roles = [
@@ -70,22 +70,22 @@ const Index = () => {
   return (
     <PageLayout>
       {/* Hero */}
-      <section className="py-20 md:py-32">
+      <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl animate-fade-up">
+              <h1 className="font-display text-6xl md:text-7xl lg:text-[96px] animate-fade-up">
                 WE PLACE PEOPLE,{" "}
                 <span className="text-primary">NOT</span> RESUMES.
               </h1>
-              <p className="mt-6 text-lg text-muted-foreground max-w-lg animate-fade-up-delay-1">
+              <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-up-delay-1 leading-relaxed">
                 Pre-vetted LATAM professionals delivered in 72 hours. Nearshore talent built for speed, quality, and US time zone alignment.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4 animate-fade-up-delay-2">
-                <Button asChild variant="hero" size="lg">
+              <div className="mt-10 flex flex-wrap gap-4 animate-fade-up-delay-2">
+                <Button asChild size="lg" className="bg-primary text-primary-foreground font-bold text-base px-8 py-6 hover:opacity-90 hover:-translate-y-0.5 transition-all">
                   <Link to="/contact">Book a Call</Link>
                 </Button>
-                <Button asChild variant="hero-outline" size="lg">
+                <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 font-bold">
                   <a href="#how-it-works">How It Works</a>
                 </Button>
               </div>
@@ -93,7 +93,7 @@ const Index = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-up-delay-3">
               {stats.map((s) => (
                 <div key={s.label} className="card-surface p-6 text-center">
-                  <div className="font-display text-4xl text-primary">{s.value}</div>
+                  <div className="font-display text-5xl text-primary">{s.value}</div>
                   <div className="mt-2 text-xs font-mono text-muted-foreground tracking-wide uppercase">{s.label}</div>
                 </div>
               ))}
@@ -107,7 +107,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
             {trustItems.map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div key={item} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Check size={14} className="text-primary" />
                 {item}
               </div>
@@ -117,16 +117,16 @@ const Index = () => {
       </section>
 
       {/* Why LATAM */}
-      <section className="py-20 bg-card">
+      <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <span className="section-tag">Why LATAM</span>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">THE NEARSHORE ADVANTAGE</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-14">THE NEARSHORE ADVANTAGE</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {whyLatam.map((item) => (
               <div key={item.title} className="card-surface p-8">
                 <div className="text-3xl mb-4">{item.emoji}</div>
                 <h3 className="font-display text-2xl mb-3">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                <p className="text-[15px] text-muted-foreground leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -134,19 +134,18 @@ const Index = () => {
       </section>
 
       {/* Vetting Framework */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <span className="section-tag">Our Process</span>
-          <h2 className="font-display text-4xl md:text-5xl mb-16">5-STEP VETTING FRAMEWORK</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-16">5-STEP VETTING FRAMEWORK</h2>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative">
-            {/* Connecting line */}
             <div className="hidden md:block absolute top-6 left-0 right-0 h-px bg-border" />
             {vettingSteps.map((step, i) => (
               <div key={step} className="flex flex-col items-center text-center relative z-10 flex-1">
                 <div className="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center font-display text-lg text-primary bg-background mb-3">
                   {i + 1}
                 </div>
-                <span className="text-sm font-medium">{step}</span>
+                <span className="text-sm font-bold">{step}</span>
               </div>
             ))}
           </div>
@@ -154,18 +153,18 @@ const Index = () => {
       </section>
 
       {/* Client Talent Portal */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="font-mono text-[11px] tracking-[3px] uppercase mb-4 inline-block opacity-70">Portal</span>
-              <h2 className="font-display text-4xl md:text-5xl mb-6">CLIENT TALENT PORTAL</h2>
-              <p className="mb-8 opacity-80">Your private dashboard for reviewing, shortlisting, and requesting interviews with pre-vetted candidates.</p>
+              <span className="font-mono text-[11px] tracking-[3px] uppercase mb-4 inline-block opacity-70">// Portal</span>
+              <h2 className="font-display text-5xl md:text-6xl mb-6">CLIENT TALENT PORTAL</h2>
+              <p className="mb-8 opacity-80 text-base leading-relaxed">Your private dashboard for reviewing, shortlisting, and requesting interviews with pre-vetted candidates.</p>
               <div className="space-y-4">
                 {portalFeatures.map((f) => (
                   <div key={f.label} className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center text-lg shrink-0">{f.icon}</div>
-                    <span className="text-sm pt-2">{f.label}</span>
+                    <span className="text-[15px] pt-2 font-medium">{f.label}</span>
                   </div>
                 ))}
               </div>
@@ -182,10 +181,10 @@ const Index = () => {
                   <div key={c.name} className="flex items-center gap-4 p-3 rounded-lg bg-card border border-border">
                     <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center font-mono text-xs text-muted-foreground">{c.initials}</div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-foreground">{c.name}</div>
+                      <div className="text-sm font-bold text-foreground">{c.name}</div>
                       <div className="text-xs text-muted-foreground">{c.role}</div>
                     </div>
-                    <span className={`text-[10px] font-mono px-2 py-1 rounded-full ${c.statusColor}`}>{c.status}</span>
+                    <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-semibold ${c.statusClass}`}>{c.status}</span>
                   </div>
                 ))}
               </div>
@@ -195,16 +194,16 @@ const Index = () => {
       </section>
 
       {/* Roles */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <span className="section-tag">Specializations</span>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">ROLES WE PLACE</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-14">ROLES WE PLACE</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {roles.map((r) => (
               <div key={r.name} className="card-surface p-8 hover:border-primary transition-colors">
                 <div className="text-3xl mb-4">{r.emoji}</div>
                 <h3 className="font-display text-2xl mb-2">{r.name}</h3>
-                <p className="text-sm text-muted-foreground">{r.desc}</p>
+                <p className="text-[15px] text-muted-foreground leading-relaxed">{r.desc}</p>
               </div>
             ))}
           </div>
@@ -212,17 +211,17 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-card">
+      <section id="how-it-works" className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <span className="section-tag">Process</span>
-          <h2 className="font-display text-4xl md:text-5xl mb-16">HOW IT WORKS</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-16">HOW IT WORKS</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {howItWorks.map((step) => (
               <div key={step.num} className="relative">
                 <div className="font-display text-8xl text-primary/10 absolute -top-4 left-0">{step.num}</div>
                 <div className="relative pt-12">
                   <h3 className="font-display text-3xl mb-3">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                  <p className="text-[15px] text-muted-foreground leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -231,18 +230,18 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <span className="section-tag">Testimonials</span>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">WHAT CLIENTS SAY</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-14">WHAT CLIENTS SAY</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
               <div key={t.name} className="card-surface p-8">
-                <p className="italic text-sm text-muted-foreground leading-relaxed mb-6">"{t.quote}"</p>
+                <p className="italic text-[15px] text-muted-foreground leading-relaxed mb-6">"{t.quote}"</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-mono text-xs text-primary">{t.initials}</div>
                   <div>
-                    <div className="text-sm font-medium">{t.name}</div>
+                    <div className="text-sm font-bold">{t.name}</div>
                     <div className="text-xs font-mono text-muted-foreground">{t.title}</div>
                   </div>
                 </div>
@@ -253,14 +252,14 @@ const Index = () => {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-28 relative overflow-hidden">
         <div className="glow-bg absolute inset-0" />
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="font-display text-5xl md:text-7xl mb-8">
+          <h2 className="font-display text-6xl md:text-8xl mb-8">
             STOP REVIEWING{" "}
             <span className="text-primary">BAD RESUMES.</span>
           </h2>
-          <Button asChild variant="hero" size="lg">
+          <Button asChild size="lg" className="bg-primary text-primary-foreground font-bold text-base px-8 py-6 hover:opacity-90 hover:-translate-y-0.5 transition-all">
             <Link to="/contact">Book a Call</Link>
           </Button>
         </div>

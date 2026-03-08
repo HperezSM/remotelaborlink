@@ -19,6 +19,7 @@ import CompanyLogin from "./pages/auth/CompanyLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import CandidateDashboard from "./pages/talent/CandidateDashboard";
 import CandidateProfileEdit from "./pages/talent/CandidateProfileEdit";
+import CandidateProfile from "./pages/talent/CandidateProfile";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -52,6 +53,7 @@ const App = () => (
             {/* Candidate */}
             <Route path="/talent/dashboard" element={<CandidateDashboard />} />
             <Route path="/talent/profile/edit" element={<CandidateProfileEdit />} />
+            <Route path="/talent/:id" element={<CandidateProfile />} />
 
             {/* Company */}
             <Route path="/company/dashboard" element={<CompanyDashboard />} />
