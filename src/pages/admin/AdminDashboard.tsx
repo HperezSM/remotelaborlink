@@ -10,6 +10,7 @@ import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDa
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
+import CandidateFilters, { filterCandidates } from "@/components/CandidateFilters";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
@@ -36,7 +37,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [candidateFilter, setCandidateFilter] = useState({ role: "", status: "", search: "" });
+  const [candidateFilter, setCandidateFilter] = useState({ search: "", role: "", seniority: "", country: "", status: "", minRate: "", maxRate: "" });
 
   useEffect(() => {
     if (role && role !== "admin") {
@@ -97,12 +98,7 @@ const AdminDashboard = () => {
     setPushNote("");
   };
 
-  const filteredCandidates = candidates.filter(c => {
-    if (candidateFilter.status && c.status !== candidateFilter.status) return false;
-    if (candidateFilter.role && !(c.roles_applied || []).some((r: string) => r.toLowerCase().includes(candidateFilter.role.toLowerCase()))) return false;
-    if (candidateFilter.search && !c.full_name?.toLowerCase().includes(candidateFilter.search.toLowerCase())) return false;
-    return true;
-  });
+  const filteredCandidates = filterCandidates(candidates, candidateFilter);
 
   const activeCompanies = companies.filter(c => c.status === "active");
 
@@ -194,16 +190,8 @@ const AdminDashboard = () => {
           {/* Candidates */}
           {activeTab === "candidates" && (
             <div>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <input placeholder="Search by name..." value={candidateFilter.search} onChange={e => setCandidateFilter(f => ({ ...f, search: e.target.value }))} className={`${inputClass} w-48`} />
-                <select value={candidateFilter.status} onChange={e => setCandidateFilter(f => ({ ...f, status: e.target.value }))} className={inputClass}>
-                  <option value="">All statuses</option>
-                  {statusOptions.map(s => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
-                </select>
-                <select value={candidateFilter.role} onChange={e => setCandidateFilter(f => ({ ...f, role: e.target.value }))} className={inputClass}>
-                  <option value="">All roles</option>
-                  {["Project Manager", "Scrum Master", "Full Stack Developer", "Frontend Developer", "Backend Developer", "UX/UI Designer", "Customer Support", "Operations Manager"].map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+              <div className="mb-6">
+                <CandidateFilters filters={candidateFilter} onFiltersChange={setCandidateFilter} />
               </div>
 
               {filteredCandidates.length === 0 ? (
