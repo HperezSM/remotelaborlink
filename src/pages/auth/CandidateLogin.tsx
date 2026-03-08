@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 
@@ -14,10 +15,30 @@ const CandidateLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
     setLoading(false);
+
     if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+      if (error.message?.toLowerCase().includes("email not confirmed")) {
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before logging in.",
+          variant: "destructive",
+          action: (
+            <button
+              className="text-xs text-primary underline whitespace-nowrap"
+              onClick={async () => {
+                await supabase.auth.resend({ type: "signup", email });
+                toast({ title: "Verification email resent" });
+              }}
+            >
+              Resend
+            </button>
+          ),
+        });
+      } else {
+        toast({ title: "Login failed", description: "Incorrect email or password", variant: "destructive" });
+      }
     } else {
       navigate("/talent/dashboard");
     }
@@ -49,11 +70,11 @@ const CandidateLogin = () => {
             </form>
             <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
               <p>
-                <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+                <Link to="/auth/forgot-password" className="text-primary hover:underline">Forgot your password?</Link>
               </p>
               <p>
                 Don't have an account?{" "}
-                <Link to="/signup/talent" className="text-primary hover:underline">Apply now</Link>
+                <Link to="/signup/talent" className="text-primary hover:underline">Apply as Talent</Link>
               </p>
             </div>
           </div>

@@ -4,30 +4,45 @@ import { Button } from "@/components/ui/button";
 import { signUpCandidate } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
+import PasswordRequirements, { isPasswordValid } from "@/components/PasswordRequirements";
 
 const CandidateSignup = () => {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-    if (password.length < 6) {
-      toast({ title: "Password must be at least 6 characters", variant: "destructive" });
+    if (!fullName || !email || !password) return;
+    if (!isPasswordValid(password)) {
+      toast({ title: "Password does not meet requirements", variant: "destructive" });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ title: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    if (!ageConfirmed || !termsAccepted) {
+      toast({ title: "Please accept all required checkboxes", variant: "destructive" });
       return;
     }
     setLoading(true);
-    const { error } = await signUpCandidate(email, password);
+    const { error } = await signUpCandidate(email, password, fullName);
     setLoading(false);
     if (error) {
       toast({ title: "Signup failed", description: (error as any).message, variant: "destructive" });
     } else {
-      toast({ title: "Account created!", description: "Check your email to confirm, then complete your profile." });
-      navigate("/talent/profile/edit");
+      navigate("/auth/check-email", { state: { email } });
     }
   };
+
+  const inputClass = "w-full bg-background border border-border rounded px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary";
+  const labelClass = "text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block";
 
   return (
     <PageLayout>
@@ -41,17 +56,44 @@ const CandidateSignup = () => {
           <div className="card-surface p-8">
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required
-                  className="w-full bg-background border border-border rounded px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
+                <label className={labelClass}>Full Name *</label>
+                <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" required className={inputClass} />
               </div>
               <div>
-                <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6}
-                  className="w-full bg-background border border-border rounded px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary" />
+                <label className={labelClass}>Email *</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required className={inputClass} />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-bold py-3.5 hover:opacity-90">
-                {loading ? "Creating account..." : "Create Account"}
+              <div>
+                <label className={labelClass}>Password *</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className={inputClass} />
+                <PasswordRequirements password={password} />
+              </div>
+              <div>
+                <label className={labelClass}>Confirm Password *</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" required className={inputClass} />
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-xs text-destructive mt-1">Passwords don't match</p>
+                )}
+              </div>
+              <div className="space-y-3 pt-2">
+                <label className="flex items-start gap-3 text-xs text-muted-foreground cursor-pointer">
+                  <input type="checkbox" checked={ageConfirmed} onChange={(e) => setAgeConfirmed(e.target.checked)} className="mt-0.5 accent-primary" />
+                  <span>I am 18 years of age or older</span>
+                </label>
+                <label className="flex items-start gap-3 text-xs text-muted-foreground cursor-pointer">
+                  <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="mt-0.5 accent-primary" />
+                  <span>
+                    I agree to the{" "}
+                    <Link to="/legal" className="text-primary hover:underline">Terms of Service and Privacy Policy</Link>
+                  </span>
+                </label>
+              </div>
+              <Button
+                type="submit"
+                disabled={loading || !ageConfirmed || !termsAccepted}
+                className="w-full bg-primary text-primary-foreground font-bold py-3.5 hover:opacity-90"
+              >
+                {loading ? "Creating account..." : "Create My Account"}
               </Button>
             </form>
             <p className="mt-4 text-xs text-muted-foreground text-center">

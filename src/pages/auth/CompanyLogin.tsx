@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 
@@ -14,13 +15,61 @@ const CompanyLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
     setLoading(false);
+
     if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } else {
-      navigate("/company/dashboard");
+      if (error.message?.toLowerCase().includes("email not confirmed")) {
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before logging in.",
+          variant: "destructive",
+          action: (
+            <button
+              className="text-xs text-primary underline whitespace-nowrap"
+              onClick={async () => {
+                await supabase.auth.resend({ type: "signup", email });
+                toast({ title: "Verification email resent" });
+              }}
+            >
+              Resend
+            </button>
+          ),
+        });
+      } else {
+        toast({ title: "Login failed", description: "Incorrect email or password", variant: "destructive" });
+      }
+      return;
     }
+
+    // Check company status
+    const { data: company } = await supabase
+      .from("companies")
+      .select("status")
+      .eq("user_id", data.user.id)
+      .single();
+
+    if (company?.status === "pending") {
+      await supabase.auth.signOut();
+      toast({
+        title: "Account under review",
+        description: "Your account is pending review. We'll email you once it's approved.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (company?.status === "suspended") {
+      await supabase.auth.signOut();
+      toast({
+        title: "Account suspended",
+        description: "Your account has been suspended. Contact team@remotelaborlink.com",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    navigate("/company/dashboard");
   };
 
   const inputClass = "w-full bg-background border border-border rounded px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary";
@@ -50,11 +99,11 @@ const CompanyLogin = () => {
             </form>
             <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
               <p>
-                <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+                <Link to="/auth/forgot-password" className="text-primary hover:underline">Forgot your password?</Link>
               </p>
               <p>
                 Don't have access?{" "}
-                <Link to="/signup/company" className="text-primary hover:underline">Create company account</Link>
+                <Link to="/signup/company" className="text-primary hover:underline">Hire Talent</Link>
                 {" · "}
                 <Link to="/contact" className="text-primary hover:underline">Book a call</Link>
               </p>
