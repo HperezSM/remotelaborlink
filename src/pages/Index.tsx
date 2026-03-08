@@ -170,7 +170,9 @@ const Index = () => {
               <motion.div variants={fadeUp} className="space-y-4">
                 {portalFeatures.map((f) => (
                   <div key={f.label} className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center text-lg shrink-0">{f.icon}</div>
+                    <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0">
+                      <f.icon size={18} className="text-foreground" />
+                    </div>
                     <span className="text-[15px] pt-2 font-medium">{f.label}</span>
                   </div>
                 ))}
