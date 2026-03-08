@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
 import { signOut } from "@/lib/auth";
-import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut, BarChart3, Palette } from "lucide-react";
+import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut, BarChart3, Palette, Briefcase } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import ContentManagementTab from "@/components/admin/ContentManagementTab";
+import JobsManagementTab from "@/components/admin/JobsManagementTab";
+import FeatureFlagsSettings from "@/components/admin/FeatureFlagsSettings";
 import CandidateFilters, { filterCandidates } from "@/components/CandidateFilters";
 
 const sidebarItems = [
