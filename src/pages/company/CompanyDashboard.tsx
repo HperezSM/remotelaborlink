@@ -35,6 +35,13 @@ const CompanyDashboard = () => {
   const [pushedCandidates, setPushedCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRoleForm, setShowRoleForm] = useState(false);
+  const [interviews, setInterviews] = useState<any[]>([]);
+  const [scheduleModal, setScheduleModal] = useState<{ pushId: string; candidateId: string; candidateName: string } | null>(null);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+  const [scheduleDuration, setScheduleDuration] = useState(30);
+  const [scheduleMeetingLink, setScheduleMeetingLink] = useState("");
+  const [scheduleNotes, setScheduleNotes] = useState("");
 
   // Role request form
   const [roleForm, setRoleForm] = useState({
