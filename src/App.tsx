@@ -19,6 +19,7 @@ import CompanyLogin from "./pages/auth/CompanyLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import CandidateDashboard from "./pages/talent/CandidateDashboard";
 import CandidateProfileEdit from "./pages/talent/CandidateProfileEdit";
+import CandidateProfile from "./pages/talent/CandidateProfile";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
