@@ -223,10 +223,10 @@ const AdminDashboard = () => {
                           <td className="py-3 px-3">
                             <div className="flex items-center gap-3">
                               {c.profile_photo_url ? (
-                                <img src={c.profile_photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                <img src={c.profile_photo_url} alt="" className="avatar-sm" />
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-mono text-muted-foreground">
-                                  {c.full_name?.charAt(0)}
+                                <div className="avatar-initials-sm">
+                                  {c.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
                                 </div>
                               )}
                               <Link to={`/talent/${c.id}`} className="font-bold text-foreground hover:text-primary">{c.full_name}</Link>
