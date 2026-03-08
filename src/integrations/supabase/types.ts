@@ -328,6 +328,36 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          company_name: string
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          logo_url: string
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          logo_url: string
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       role_requests: {
         Row: {
           additional_notes: string | null
@@ -398,6 +428,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      team_members: {
+        Row: {
+          bullets: string[] | null
+          created_at: string
+          display_order: number | null
+          id: string
+          initials: string
+          name: string
+          photo_url: string | null
+          quote: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          bullets?: string[] | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          initials: string
+          name: string
+          photo_url?: string | null
+          quote?: string | null
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          bullets?: string[] | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          initials?: string
+          name?: string
+          photo_url?: string | null
+          quote?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          client_name: string
+          client_role: string | null
+          company_name: string | null
+          content: string
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          photo_url: string | null
+          rating: number | null
+        }
+        Insert: {
+          client_name: string
+          client_role?: string | null
+          company_name?: string | null
+          content: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          photo_url?: string | null
+          rating?: number | null
+        }
+        Update: {
+          client_name?: string
+          client_role?: string | null
+          company_name?: string | null
+          content?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          photo_url?: string | null
+          rating?: number | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

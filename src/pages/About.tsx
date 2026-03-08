@@ -2,6 +2,9 @@ import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
+import TeamSection from "@/components/TeamSection";
+import PartnersCarousel from "@/components/PartnersCarousel";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 const values = [
   { emoji: "💎", title: "Quality", desc: "Every candidate, every process, every interaction reflects our commitment to excellence." },
@@ -15,45 +18,6 @@ const coreValues = [
   { name: "Agile Recruiting", desc: "We adapt with your evolving needs, combining speed with flexibility to find the right fit at the right time." },
   { name: "Partnership, Over Transactions.", desc: "We partner with startups as they grow, thinking long-term, not just about the next hire." },
   { name: "Culture-Driven, Remote Work.", desc: "It's about the momentum of collaboration, and building global teams that value time, culture, and talent." },
-];
-
-const teamMembers = [
-  {
-    name: "Herber",
-    role: "CEO & Head of Operations",
-    initials: "H",
-    bullets: [
-      "Leads complex IT and product initiatives across distributed teams",
-      "Brings clarity and execution structure when things get messy",
-      "Assesses technical talent with a real startup and enterprise lens",
-      "9+ years across healthcare tech, SaaS, cybersecurity, and IT infrastructure",
-    ],
-    quote: "Good systems make good teams possible.",
-  },
-  {
-    name: "Karlis",
-    role: "Co-Founder & Head of Marketing",
-    initials: "K",
-    bullets: [
-      "Leads marketing and growth across multiple industries",
-      "Keeps teams aligned, supported, and accountable",
-      "Bridges the gap between founders and talent to build long-term partnerships",
-      "Specializes in positioning and brand strategy for remote-first companies",
-    ],
-    quote: "Remote work only works when people feel seen and supported.",
-  },
-  {
-    name: "Karla",
-    role: "Co-Founder & Head of Talent",
-    initials: "KA",
-    bullets: [
-      "Psychology background combined with premium recruiting expertise",
-      "Hands-on throughout every hiring process — asks the right questions",
-      "Helps founders avoid costly hiring mistakes before they happen",
-      "Designs the vetting framework that separates real talent from resume noise",
-    ],
-    quote: "The right team starts with the right people.",
-  },
 ];
 
 const latamRows = [
@@ -253,56 +217,14 @@ const About = () => (
       </div>
     </section>
 
-    {/* S9 — Team */}
-    <section className="py-24 bg-card">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="section-tag">The Team</span>
-          <h2 className="font-display text-5xl md:text-6xl">
-            WHO IS BEHIND<br />
-            <span className="text-primary">REMOTE LABORLINK.</span>
-          </h2>
-          <p className="mt-4 font-body text-lg text-foreground/60 max-w-lg mx-auto">
-            Built by operators who've lived both sides of the hiring problem.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {teamMembers.map((m) => (
-            <div
-              key={m.name}
-              className="relative pt-[70px] group"
-            >
-              {/* Photo / initials circle */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
-                <div className="avatar-initials-lg" style={{ border: '3px solid hsl(var(--primary))' }}>
-                  {m.initials}
-                </div>
-              </div>
-              {/* Card */}
-              <div className="card-surface rounded-xl p-8 pt-16 text-center h-full transition-all duration-300 group-hover:border-primary group-hover:-translate-y-1">
-                {/* Role badge */}
-                <div className="inline-block border border-primary text-primary font-body text-xs font-bold uppercase tracking-[1px] rounded-full px-4 py-1.5 mb-4">
-                  {m.role}
-                </div>
-                {/* Bullets */}
-                <ul className="text-left space-y-2 mb-6">
-                  {m.bullets.map((b, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[14px] font-body text-foreground/70">
-                      <span className="text-primary mt-0.5 text-xs">•</span>
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-                {/* Quote */}
-                <p className="font-body italic text-sm text-muted-foreground mb-4">"{m.quote}"</p>
-                {/* Name */}
-                <p className="font-display text-[28px] text-foreground">{m.name}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    {/* S9 — Team (Dynamic) */}
+    <TeamSection />
+
+    {/* Partners Carousel */}
+    <PartnersCarousel />
+
+    {/* Testimonials */}
+    <TestimonialsSection />
 
     {/* S10 — Why LATAM */}
     <section className="py-24">
