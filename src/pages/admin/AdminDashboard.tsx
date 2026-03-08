@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
 import { signOut } from "@/lib/auth";
 import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
+import MessagingPanel from "@/components/MessagingPanel";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
@@ -149,7 +151,10 @@ const AdminDashboard = () => {
       <main className="flex-1 overflow-auto">
         <header className="border-b border-border px-8 py-4 flex items-center justify-between">
           <h1 className="font-display text-2xl">{sidebarItems.find(s => s.id === activeTab)?.label?.toUpperCase()}</h1>
-          <span className="text-xs font-mono text-muted-foreground">{user?.email}</span>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <span className="text-xs font-mono text-muted-foreground">{user?.email}</span>
+          </div>
         </header>
 
         <div className="p-8">
@@ -398,10 +403,12 @@ const AdminDashboard = () => {
 
           {/* Messages */}
           {activeTab === "messages" && (
-            <div className="card-surface p-12 text-center">
-              <h3 className="font-display text-xl mb-2">MESSAGING</h3>
-              <p className="text-sm text-muted-foreground">Unified messaging with candidates and companies coming in next phase.</p>
-            </div>
+            <MessagingPanel
+              contacts={[
+                ...candidates.map(c => ({ userId: c.user_id, name: c.full_name, role: "candidate" as const })),
+                ...companies.map(c => ({ userId: c.user_id, name: c.company_name, role: "company" as const })),
+              ]}
+            />
           )}
 
           {/* Settings */}

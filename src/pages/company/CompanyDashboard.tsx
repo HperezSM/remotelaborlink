@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "@/lib/auth";
 import logoIcon from "@/assets/logo-icon.png";
 import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
+import MessagingPanel from "@/components/MessagingPanel";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
@@ -164,6 +166,7 @@ const CompanyDashboard = () => {
       <main className="flex-1 overflow-auto">
         <header className="border-b border-border px-8 py-4 flex items-center justify-between">
           <h1 className="font-display text-2xl">{sidebarItems.find(s => s.id === activeTab)?.label?.toUpperCase()}</h1>
+          <NotificationBell />
         </header>
 
         <div className="p-8">
@@ -322,10 +325,7 @@ const CompanyDashboard = () => {
 
           {/* Messages */}
           {activeTab === "messages" && (
-            <div className="card-surface p-12 text-center">
-              <h3 className="font-display text-xl mb-2">MESSAGING</h3>
-              <p className="text-sm text-muted-foreground">Message your account manager directly. Coming in next update.</p>
-            </div>
+            <MessagingPanel />
           )}
 
           {/* Settings */}
