@@ -190,16 +190,8 @@ const AdminDashboard = () => {
           {/* Candidates */}
           {activeTab === "candidates" && (
             <div>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <input placeholder="Search by name..." value={candidateFilter.search} onChange={e => setCandidateFilter(f => ({ ...f, search: e.target.value }))} className={`${inputClass} w-48`} />
-                <select value={candidateFilter.status} onChange={e => setCandidateFilter(f => ({ ...f, status: e.target.value }))} className={inputClass}>
-                  <option value="">All statuses</option>
-                  {statusOptions.map(s => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
-                </select>
-                <select value={candidateFilter.role} onChange={e => setCandidateFilter(f => ({ ...f, role: e.target.value }))} className={inputClass}>
-                  <option value="">All roles</option>
-                  {["Project Manager", "Scrum Master", "Full Stack Developer", "Frontend Developer", "Backend Developer", "UX/UI Designer", "Customer Support", "Operations Manager"].map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+              <div className="mb-6">
+                <CandidateFilters filters={candidateFilter} onFiltersChange={setCandidateFilter} />
               </div>
 
               {filteredCandidates.length === 0 ? (
