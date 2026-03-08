@@ -47,10 +47,15 @@ const CandidateLogin = () => {
                 {loading ? "Logging in..." : "Log In"}
               </Button>
             </form>
-            <p className="mt-4 text-xs text-muted-foreground text-center">
-              Don't have an account?{" "}
-              <Link to="/signup/talent" className="text-primary hover:underline">Apply now</Link>
-            </p>
+            <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
+              <p>
+                <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+              </p>
+              <p>
+                Don't have an account?{" "}
+                <Link to="/signup/talent" className="text-primary hover:underline">Apply now</Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>

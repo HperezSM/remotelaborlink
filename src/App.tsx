@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ForCompanies from "./pages/ForCompanies";
 import ForTalent from "./pages/ForTalent";
@@ -17,6 +18,8 @@ import CompanySignup from "./pages/auth/CompanySignup";
 import CandidateLogin from "./pages/auth/CandidateLogin";
 import CompanyLogin from "./pages/auth/CompanyLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import CandidateDashboard from "./pages/talent/CandidateDashboard";
 import CandidateProfileEdit from "./pages/talent/CandidateProfileEdit";
 import CandidateProfile from "./pages/talent/CandidateProfile";
@@ -49,17 +52,35 @@ const App = () => (
             <Route path="/login/talent" element={<CandidateLogin />} />
             <Route path="/login/company" element={<CompanyLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Candidate */}
-            <Route path="/talent/dashboard" element={<CandidateDashboard />} />
-            <Route path="/talent/profile/edit" element={<CandidateProfileEdit />} />
+            {/* Candidate (protected) */}
+            <Route path="/talent/dashboard" element={
+              <ProtectedRoute allowedRoles={["candidate"]} redirectTo="/login/talent">
+                <CandidateDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/talent/profile/edit" element={
+              <ProtectedRoute allowedRoles={["candidate"]} redirectTo="/login/talent">
+                <CandidateProfileEdit />
+              </ProtectedRoute>
+            } />
             <Route path="/talent/:id" element={<CandidateProfile />} />
 
-            {/* Company */}
-            <Route path="/company/dashboard" element={<CompanyDashboard />} />
+            {/* Company (protected) */}
+            <Route path="/company/dashboard" element={
+              <ProtectedRoute allowedRoles={["company"]} redirectTo="/login/company">
+                <CompanyDashboard />
+              </ProtectedRoute>
+            } />
 
-            {/* Admin */}
-            <Route path="/admin" element={<AdminDashboard />} />
+            {/* Admin (protected) */}
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={["admin"]} redirectTo="/admin/login">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

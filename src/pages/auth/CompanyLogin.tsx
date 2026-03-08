@@ -48,12 +48,17 @@ const CompanyLogin = () => {
                 {loading ? "Logging in..." : "Log In"}
               </Button>
             </form>
-            <p className="mt-4 text-xs text-muted-foreground text-center">
-              Don't have access?{" "}
-              <Link to="/signup/company" className="text-primary hover:underline">Create company account</Link>
-              {" · "}
-              <Link to="/contact" className="text-primary hover:underline">Book a call</Link>
-            </p>
+            <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
+              <p>
+                <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+              </p>
+              <p>
+                Don't have access?{" "}
+                <Link to="/signup/company" className="text-primary hover:underline">Create company account</Link>
+                {" · "}
+                <Link to="/contact" className="text-primary hover:underline">Book a call</Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>
