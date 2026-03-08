@@ -477,6 +477,33 @@ const CompanyDashboard = () => {
           )}
         </div>
       </main>
+
+      {/* Schedule Interview Modal */}
+      {scheduleModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="card-surface p-8 max-w-md w-full">
+            <h3 className="font-display text-xl mb-4">SCHEDULE INTERVIEW</h3>
+            <p className="text-sm text-muted-foreground mb-4">Schedule an interview with <strong className="text-foreground">{scheduleModal.candidateName}</strong></p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Date *</label><input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className={inputClass} /></div>
+                <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Time *</label><input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className={inputClass} /></div>
+              </div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Duration (min)</label>
+                <select value={scheduleDuration} onChange={e => setScheduleDuration(parseInt(e.target.value))} className={inputClass}>
+                  <option value={15}>15 min</option><option value={30}>30 min</option><option value={45}>45 min</option><option value={60}>60 min</option>
+                </select>
+              </div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Meeting Link</label><input value={scheduleMeetingLink} onChange={e => setScheduleMeetingLink(e.target.value)} placeholder="https://meet.google.com/..." className={inputClass} /></div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Notes</label><textarea value={scheduleNotes} onChange={e => setScheduleNotes(e.target.value)} rows={2} className={inputClass} placeholder="Any details..." /></div>
+              <div className="flex gap-3 justify-end">
+                <Button variant="outline" size="sm" onClick={() => setScheduleModal(null)}>Cancel</Button>
+                <Button size="sm" onClick={scheduleInterview} disabled={!scheduleDate || !scheduleTime} className="bg-primary text-primary-foreground font-bold">Schedule</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
