@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import logoIcon from "@/assets/logo-icon.png";
+import { SocialIconRow } from "@/components/SocialLinks";
 
 const navLinks = [
   { label: "Home", to: "/" },
@@ -85,6 +86,9 @@ const Navbar = () => {
             <Button asChild size="default" className="w-full bg-primary text-primary-foreground font-bold">
               <Link to="/login/company" onClick={() => setMobileOpen(false)}>Client Portal</Link>
             </Button>
+          </div>
+          <div className="pt-3 border-t border-border">
+            <SocialIconRow />
           </div>
         </div>
       )}

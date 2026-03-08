@@ -1,8 +1,10 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Check, ArrowRight, Zap, Clock, Shield, Star } from "lucide-react";
+import { Check, ArrowRight, Zap, Clock, Shield, FileText, Code, Palette, Headphones, Settings } from "lucide-react";
 import { motion } from "framer-motion";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import PartnersCarousel from "@/components/PartnersCarousel";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
@@ -22,18 +24,18 @@ const trustItems = [
 ];
 
 const whyLatam = [
-  { emoji: "🕐", title: "Time Zone Alignment", desc: "LATAM professionals work your hours. Real-time collaboration, no overnight handoffs." },
-  { emoji: "🗣️", title: "English Proficiency", desc: "Every candidate passes rigorous English assessments. Written and verbal fluency required." },
-  { emoji: "💰", title: "Cost Efficiency", desc: "Access senior-level talent at 40-60% lower cost than US equivalents without sacrificing quality." },
+  { icon: Clock, title: "Time Zone Alignment", desc: "LATAM professionals work your hours. Real-time collaboration, no overnight handoffs." },
+  { icon: Zap, title: "English Proficiency", desc: "Every candidate passes rigorous English assessments. Written and verbal fluency required." },
+  { icon: Shield, title: "Cost Efficiency", desc: "Access senior-level talent at 40-60% lower cost than US equivalents without sacrificing quality." },
 ];
 
 const vettingSteps = ["Application Screen", "Technical Assessment", "Live Interview", "Reference Check", "Portal Upload"];
 
 const portalFeatures = [
-  { icon: "📋", label: "Pre-vetted candidate profiles with skill summaries" },
-  { icon: "📥", label: "Downloadable CVs and work samples" },
-  { icon: "⭐", label: "Shortlist and compare candidates side-by-side" },
-  { icon: "📅", label: "Request interviews directly through the portal" },
+  { icon: FileText, label: "Pre-vetted candidate profiles with skill summaries" },
+  { icon: Check, label: "Downloadable CVs and work samples" },
+  { icon: Shield, label: "Shortlist and compare candidates side-by-side" },
+  { icon: Clock, label: "Request interviews directly through the portal" },
 ];
 
 const portalCandidates = [
@@ -44,12 +46,12 @@ const portalCandidates = [
 ];
 
 const roles = [
-  { emoji: "📊", name: "Project Managers", desc: "Experienced PMs who keep distributed teams aligned and shipping on time." },
-  { emoji: "🔄", name: "Scrum Masters", desc: "Certified professionals who drive agile processes and remove blockers." },
-  { emoji: "💻", name: "Developers", desc: "Full-stack, frontend, backend, and mobile engineers across modern stacks." },
-  { emoji: "🎨", name: "UX/UI Designers", desc: "Product designers who craft user-centered experiences that convert." },
-  { emoji: "🎧", name: "Customer Support", desc: "Bilingual support specialists who deliver exceptional client experiences." },
-  { emoji: "⚙️", name: "Operations", desc: "Ops professionals who streamline workflows and scale processes." },
+  { icon: FileText, name: "Project Managers", desc: "Experienced PMs who keep distributed teams aligned and shipping on time." },
+  { icon: Settings, name: "Scrum Masters", desc: "Certified professionals who drive agile processes and remove blockers." },
+  { icon: Code, name: "Developers", desc: "Full-stack, frontend, backend, and mobile engineers across modern stacks." },
+  { icon: Palette, name: "UX/UI Designers", desc: "Product designers who craft user-centered experiences that convert." },
+  { icon: Headphones, name: "Customer Support", desc: "Bilingual support specialists who deliver exceptional client experiences." },
+  { icon: Settings, name: "Operations", desc: "Ops professionals who streamline workflows and scale processes." },
 ];
 
 const howItWorks = [
@@ -58,11 +60,6 @@ const howItWorks = [
   { num: "03", title: "Hire & Start", desc: "Select your candidate. We handle onboarding logistics so they're productive from day one." },
 ];
 
-const testimonials = [
-  { quote: "Remote LaborLink cut our hiring timeline from 6 weeks to 3 days. The quality of candidates was unmatched.", initials: "JM", name: "Jake Morrison", title: "CTO, ScaleOps Inc.", stars: 5 },
-  { quote: "We've retained every placement for over a year. Their vetting process actually works.", initials: "SR", name: "Sarah Rivera", title: "VP People, GrowthBase", stars: 5 },
-  { quote: "The portal changed everything. No more back-and-forth emails — just curated profiles ready to go.", initials: "KP", name: "Kevin Park", title: "Founder, BuildRight", stars: 5 },
-];
 
 const Index = () => {
   return (
@@ -128,7 +125,9 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {whyLatam.map((item) => (
                 <motion.div key={item.title} variants={fadeUp} className="card-surface p-8 hover:border-primary/40 hover:-translate-y-1 transition-all duration-300">
-                  <div className="text-3xl mb-4">{item.emoji}</div>
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                    <item.icon size={24} className="text-primary" />
+                  </div>
                   <h3 className="font-display text-2xl mb-3">{item.title}</h3>
                   <p className="text-[15px] text-muted-foreground leading-relaxed">{item.desc}</p>
                 </motion.div>
@@ -171,7 +170,9 @@ const Index = () => {
               <motion.div variants={fadeUp} className="space-y-4">
                 {portalFeatures.map((f) => (
                   <div key={f.label} className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center text-lg shrink-0">{f.icon}</div>
+                    <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0">
+                      <f.icon size={18} className="text-foreground" />
+                    </div>
                     <span className="text-[15px] pt-2 font-medium">{f.label}</span>
                   </div>
                 ))}
@@ -220,7 +221,9 @@ const Index = () => {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {roles.map((r) => (
               <motion.div key={r.name} variants={fadeUp} className="card-surface p-8 hover:border-primary hover:-translate-y-1 transition-all duration-300 group">
-                <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">{r.emoji}</div>
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all">
+                  <r.icon size={24} className="text-primary" />
+                </div>
                 <h3 className="font-display text-2xl mb-2">{r.name}</h3>
                 <p className="text-[15px] text-muted-foreground leading-relaxed">{r.desc}</p>
               </motion.div>
@@ -248,32 +251,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <span className="section-tag">Testimonials</span>
-          <h2 className="font-display text-5xl md:text-6xl mb-14">WHAT CLIENTS SAY</h2>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <motion.div key={t.name} variants={fadeUp} className="card-surface p-8 hover:border-primary/30 transition-colors">
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <Star key={i} size={14} className="fill-primary text-primary" />
-                  ))}
-                </div>
-                <p className="italic text-[15px] text-muted-foreground leading-relaxed mb-6">"{t.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-mono text-xs text-primary">{t.initials}</div>
-                  <div>
-                    <div className="text-sm font-bold">{t.name}</div>
-                    <div className="text-xs font-mono text-muted-foreground">{t.title}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* Partners */}
+      <PartnersCarousel />
+
+      {/* Testimonials (DB-driven only) */}
+      <TestimonialsSection />
 
       {/* Bottom CTA */}
       <section className="py-28 relative overflow-hidden">

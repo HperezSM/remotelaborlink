@@ -1,7 +1,8 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
+import { Calendar, Mail, Phone } from "lucide-react";
 import { useState } from "react";
+import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", company: "", email: "", type: "", message: "" });
@@ -26,43 +27,23 @@ const Contact = () => {
               <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                 <div>
                   <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Name</label>
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Your full name"
-                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input name="name" value={form.name} onChange={handleChange} placeholder="Your full name"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
                   <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Company / Role</label>
-                  <input
-                    name="company"
-                    value={form.company}
-                    onChange={handleChange}
-                    placeholder="Company name or current role"
-                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input name="company" value={form.company} onChange={handleChange} placeholder="Company name or current role"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
                   <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Email</label>
-                  <input
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="you@company.com"
-                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@company.com"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
                   <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">I am a</label>
-                  <select
-                    name="type"
-                    value={form.type}
-                    onChange={handleChange}
-                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
+                  <select name="type" value={form.type} onChange={handleChange}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
                     <option value="">Select one...</option>
                     <option value="company">US Company</option>
                     <option value="talent">LATAM Professional</option>
@@ -70,14 +51,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Message</label>
-                  <textarea
-                    name="message"
-                    value={form.message}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder="Tell us about your needs..."
-                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                  />
+                  <textarea name="message" value={form.message} onChange={handleChange} rows={4} placeholder="Tell us about your needs..."
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
                 </div>
                 <Button variant="hero" size="lg" className="w-full">
                   Send Message
@@ -85,13 +60,27 @@ const Contact = () => {
               </form>
             </div>
 
-            {/* Calendly Placeholder */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="card-surface border-dashed border-2 rounded-lg p-16 w-full flex flex-col items-center justify-center text-center min-h-[400px]">
+            {/* Right side: Calendly + Contact info */}
+            <div className="flex flex-col gap-8">
+              <div className="card-surface border-dashed border-2 rounded-lg p-16 w-full flex flex-col items-center justify-center text-center min-h-[300px]">
                 <Calendar className="text-primary mb-4" size={48} />
                 <h3 className="font-display text-2xl mb-2">BOOK A CALL</h3>
                 <p className="text-sm text-muted-foreground mb-4">Schedule a 30-minute talent strategy session.</p>
                 <p className="text-xs font-mono text-muted-foreground">Calendly embed placeholder</p>
+              </div>
+
+              {/* Contact details & social */}
+              <div className="card-surface p-8">
+                <h3 className="font-display text-lg mb-4">REACH US DIRECTLY</h3>
+                <div className="space-y-3 mb-6">
+                  <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Mail size={16} className="text-primary" /> {contactInfo.email}
+                  </a>
+                  <a href={`tel:${contactInfo.phone.replace(/-/g, "")}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Phone size={16} className="text-primary" /> {contactInfo.phone}
+                  </a>
+                </div>
+                <SocialIconRow label="Follow us" />
               </div>
             </div>
           </div>
