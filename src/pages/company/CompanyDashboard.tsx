@@ -359,6 +359,48 @@ const CompanyDashboard = () => {
             </div>
           )}
 
+          {/* Interviews */}
+          {activeTab === "interviews" && (
+            <div>
+              {interviews.length === 0 ? (
+                <div className="card-surface p-12 text-center">
+                  <h3 className="font-display text-xl mb-2">NO INTERVIEWS SCHEDULED</h3>
+                  <p className="text-sm text-muted-foreground">Schedule interviews from the Talent Pool tab.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {interviews.map(iv => {
+                    const cand = pushedCandidates.find(c => c.id === iv.candidate_id);
+                    const isPast = new Date(iv.scheduled_at) < new Date();
+                    return (
+                      <div key={iv.id} className={`card-surface p-6 flex items-center justify-between ${isPast ? 'opacity-60' : ''}`}>
+                        <div className="flex items-center gap-4">
+                          {cand?.profile_photo_url ? (
+                            <img src={cand.profile_photo_url} alt="" className="avatar-sm" />
+                          ) : (
+                            <div className="avatar-initials-sm">{cand?.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2) || "?"}</div>
+                          )}
+                          <div>
+                            <h3 className="font-bold text-foreground">{cand?.full_name || "Unknown"}</h3>
+                            <p className="text-xs text-muted-foreground">{(cand?.roles_applied || []).join(", ")}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-foreground">{new Date(iv.scheduled_at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(iv.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {iv.duration_minutes}min</p>
+                          {iv.meeting_link && <a href={iv.meeting_link} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">Join Meeting</a>}
+                        </div>
+                        <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-semibold ${iv.status === 'scheduled' ? 'status-screening' : iv.status === 'completed' ? 'status-active' : 'status-rejected'}`}>
+                          {iv.status}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Compare */}
           {activeTab === "compare" && (
             <div>
