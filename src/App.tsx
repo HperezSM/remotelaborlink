@@ -26,6 +26,7 @@ import CandidateProfile from "./pages/talent/CandidateProfile";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Jobs from "./pages/Jobs";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
