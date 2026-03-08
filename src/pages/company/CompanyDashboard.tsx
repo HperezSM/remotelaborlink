@@ -324,10 +324,7 @@ const CompanyDashboard = () => {
 
           {/* Messages */}
           {activeTab === "messages" && (
-            <div className="card-surface p-12 text-center">
-              <h3 className="font-display text-xl mb-2">MESSAGING</h3>
-              <p className="text-sm text-muted-foreground">Message your account manager directly. Coming in next update.</p>
-            </div>
+            <MessagingPanel />
           )}
 
           {/* Settings */}
