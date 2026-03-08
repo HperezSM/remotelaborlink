@@ -6,9 +6,8 @@ const Footer = () => (
     <div className="container mx-auto px-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <Link to="/" className="flex flex-col leading-none mb-4">
-            <span className="font-mono text-[9px] tracking-[3px] text-muted-foreground uppercase">Remote</span>
-            <span className="font-display text-xl tracking-wide text-foreground">LABORLINK</span>
+          <Link to="/" className="block mb-4">
+            <img src={logoBanner} alt="Remote LaborLink" className="h-10 w-auto" />
           </Link>
           <p className="text-sm text-muted-foreground">We Place People, Not Resumes.</p>
         </div>
