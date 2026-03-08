@@ -10,6 +10,7 @@ import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDa
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
+import CandidateFilters, { filterCandidates } from "@/components/CandidateFilters";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
