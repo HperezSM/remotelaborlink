@@ -61,8 +61,16 @@ const MessagingPanel = ({ contacts: externalContacts }: MessagingPanelProps) => 
 
     const contactList: Contact[] = [];
 
-    if (externalContacts) {
-      externalContacts.forEach(c => {
+    // Filter contacts based on messaging rules
+    const filteredContacts = externalContacts ? externalContacts.filter(c => {
+      if (role === "admin") return true;
+      if (role === "candidate") return c.role === "admin";
+      if (role === "company") return c.role === "admin"; // will expand with subscriptions
+      return false;
+    }) : [];
+
+    if (filteredContacts.length > 0) {
+      filteredContacts.forEach(c => {
         const threadId = generateThreadId(user.id, c.userId);
         const existing = threadMap.get(threadId);
         contactList.push({
