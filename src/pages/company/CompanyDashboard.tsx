@@ -63,15 +63,16 @@ const CompanyDashboard = () => {
     const { data: co } = await supabase.from("companies").select("*").eq("user_id", user.id).single();
     setCompany(co);
     if (co) {
-      const [rrRes, pRes] = await Promise.all([
+      const [rrRes, pRes, ivRes] = await Promise.all([
         supabase.from("role_requests").select("*").eq("company_id", co.id).order("created_at", { ascending: false }),
         supabase.from("candidate_pushes").select("*").eq("company_id", co.id).order("pushed_at", { ascending: false }),
+        supabase.from("interviews").select("*").eq("company_id", co.id).order("scheduled_at", { ascending: true }),
       ]);
       setRoleRequests(rrRes.data || []);
       const pushData = pRes.data || [];
       setPushes(pushData);
+      setInterviews(ivRes.data || []);
 
-      // Fetch candidate profiles for pushed candidates
       if (pushData.length > 0) {
         const candidateIds = [...new Set(pushData.map(p => p.candidate_id))];
         const { data: cands } = await supabase.from("candidate_profiles").select("*").in("id", candidateIds);
