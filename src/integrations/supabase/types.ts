@@ -201,6 +201,30 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          enabled: boolean
+          flag_key: string
+          flag_label: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          flag_key: string
+          flag_label: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          flag_key?: string
+          flag_label?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       interviews: {
         Row: {
           candidate_id: string
@@ -258,6 +282,119 @@ export type Database = {
           },
           {
             foreignKeyName: "interviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_applications: {
+        Row: {
+          admin_notes: string | null
+          applied_at: string
+          candidate_id: string
+          id: string
+          job_id: string
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          applied_at?: string
+          candidate_id: string
+          id?: string
+          job_id: string
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          applied_at?: string
+          candidate_id?: string
+          id?: string
+          job_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          created_by_admin: string | null
+          engagement_type: string | null
+          full_description: string | null
+          id: string
+          nice_to_haves: string | null
+          posted_at: string
+          requirements: string | null
+          role_type: string
+          salary_max: number | null
+          salary_min: number | null
+          seniority: string | null
+          short_description: string | null
+          show_company_name: boolean
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          created_by_admin?: string | null
+          engagement_type?: string | null
+          full_description?: string | null
+          id?: string
+          nice_to_haves?: string | null
+          posted_at?: string
+          requirements?: string | null
+          role_type: string
+          salary_max?: number | null
+          salary_min?: number | null
+          seniority?: string | null
+          short_description?: string | null
+          show_company_name?: boolean
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          created_by_admin?: string | null
+          engagement_type?: string | null
+          full_description?: string | null
+          id?: string
+          nice_to_haves?: string | null
+          posted_at?: string
+          requirements?: string | null
+          role_type?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          seniority?: string | null
+          short_description?: string | null
+          show_company_name?: boolean
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
