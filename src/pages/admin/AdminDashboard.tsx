@@ -408,6 +408,11 @@ const AdminDashboard = () => {
             />
           )}
 
+          {/* Content Management */}
+          {activeTab === "content" && (
+            <ContentManagementTab />
+          )}
+
           {/* Settings */}
           {activeTab === "settings" && (
             <div className="card-surface p-8 max-w-md">
