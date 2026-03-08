@@ -114,6 +114,30 @@ const CompanyDashboard = () => {
     else { toast({ title: `Candidate ${action}` }); fetchData(); }
   };
 
+  const scheduleInterview = async () => {
+    if (!scheduleModal || !company || !scheduleDate || !scheduleTime) return;
+    const scheduledAt = new Date(`${scheduleDate}T${scheduleTime}`).toISOString();
+    const { error } = await supabase.from("interviews").insert({
+      candidate_push_id: scheduleModal.pushId,
+      company_id: company.id,
+      candidate_id: scheduleModal.candidateId,
+      scheduled_at: scheduledAt,
+      duration_minutes: scheduleDuration,
+      meeting_link: scheduleMeetingLink || null,
+      notes: scheduleNotes || null,
+    });
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: "Interview scheduled!" });
+      await updatePushAction(scheduleModal.pushId, "interview_requested");
+    }
+    setScheduleModal(null);
+    setScheduleDate("");
+    setScheduleTime("");
+    setScheduleMeetingLink("");
+    setScheduleNotes("");
+  };
+
   const getStatusBadge = (status: string) => {
     const map: Record<string, string> = {
       active: "status-active", filled: "status-active", candidates_ready: "status-screening",
