@@ -21,6 +21,7 @@ const sidebarItems = [
   { label: "Role Requests", icon: FileText, id: "roles" },
   { label: "Matches", icon: GitMerge, id: "matches" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
+  { label: "Content", icon: Palette, id: "content" },
   { label: "Settings", icon: Settings, id: "settings" },
 ];
 
