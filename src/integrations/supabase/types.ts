@@ -14,16 +14,360 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      candidate_profiles: {
+        Row: {
+          availability: string | null
+          bio: string | null
+          city: string
+          country: string
+          created_at: string
+          employment_status: string | null
+          english_proficiency: string | null
+          expected_rate_usd: number | null
+          full_name: string
+          id: string
+          industries: string[] | null
+          linkedin_url: string | null
+          loom_video_url: string | null
+          onboarding_completed: boolean
+          portfolio_link: string | null
+          portfolio_url: string | null
+          profile_photo_url: string | null
+          proud_achievement: string | null
+          resume_url: string | null
+          roles_applied: string[]
+          seniority_level: string | null
+          status: string
+          technical_skills: string[] | null
+          updated_at: string
+          user_id: string
+          work_type_preference: string | null
+          years_experience: string | null
+        }
+        Insert: {
+          availability?: string | null
+          bio?: string | null
+          city: string
+          country: string
+          created_at?: string
+          employment_status?: string | null
+          english_proficiency?: string | null
+          expected_rate_usd?: number | null
+          full_name: string
+          id?: string
+          industries?: string[] | null
+          linkedin_url?: string | null
+          loom_video_url?: string | null
+          onboarding_completed?: boolean
+          portfolio_link?: string | null
+          portfolio_url?: string | null
+          profile_photo_url?: string | null
+          proud_achievement?: string | null
+          resume_url?: string | null
+          roles_applied?: string[]
+          seniority_level?: string | null
+          status?: string
+          technical_skills?: string[] | null
+          updated_at?: string
+          user_id: string
+          work_type_preference?: string | null
+          years_experience?: string | null
+        }
+        Update: {
+          availability?: string | null
+          bio?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          employment_status?: string | null
+          english_proficiency?: string | null
+          expected_rate_usd?: number | null
+          full_name?: string
+          id?: string
+          industries?: string[] | null
+          linkedin_url?: string | null
+          loom_video_url?: string | null
+          onboarding_completed?: boolean
+          portfolio_link?: string | null
+          portfolio_url?: string | null
+          profile_photo_url?: string | null
+          proud_achievement?: string | null
+          resume_url?: string | null
+          roles_applied?: string[]
+          seniority_level?: string | null
+          status?: string
+          technical_skills?: string[] | null
+          updated_at?: string
+          user_id?: string
+          work_type_preference?: string | null
+          years_experience?: string | null
+        }
+        Relationships: []
+      }
+      candidate_pushes: {
+        Row: {
+          admin_note: string | null
+          candidate_id: string
+          company_action: string
+          company_id: string
+          id: string
+          pushed_at: string
+          role_request_id: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          candidate_id: string
+          company_action?: string
+          company_id: string
+          id?: string
+          pushed_at?: string
+          role_request_id?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          candidate_id?: string
+          company_action?: string
+          company_id?: string
+          id?: string
+          pushed_at?: string
+          role_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_pushes_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_pushes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_pushes_role_request_id_fkey"
+            columns: ["role_request_id"]
+            isOneToOne: false
+            referencedRelation: "role_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          company_email: string
+          company_name: string
+          company_size: string | null
+          company_website: string | null
+          contact_person_name: string | null
+          created_at: string
+          how_heard: string | null
+          id: string
+          industry: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_email: string
+          company_name: string
+          company_size?: string | null
+          company_website?: string | null
+          contact_person_name?: string | null
+          created_at?: string
+          how_heard?: string | null
+          id?: string
+          industry?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_email?: string
+          company_name?: string
+          company_size?: string | null
+          company_website?: string | null
+          contact_person_name?: string | null
+          created_at?: string
+          how_heard?: string | null
+          id?: string
+          industry?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          recipient_id: string
+          recipient_role: Database["public"]["Enums"]["app_role"]
+          sender_id: string
+          sender_role: Database["public"]["Enums"]["app_role"]
+          thread_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          recipient_id: string
+          recipient_role: Database["public"]["Enums"]["app_role"]
+          sender_id: string
+          sender_role: Database["public"]["Enums"]["app_role"]
+          thread_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          recipient_id?: string
+          recipient_role?: Database["public"]["Enums"]["app_role"]
+          sender_id?: string
+          sender_role?: Database["public"]["Enums"]["app_role"]
+          thread_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          type: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          type: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      role_requests: {
+        Row: {
+          additional_notes: string | null
+          admin_notes: string | null
+          budget_max: number | null
+          budget_min: number | null
+          company_id: string
+          created_at: string
+          engagement_type: string | null
+          id: string
+          must_have_skills: string[] | null
+          nice_to_have_skills: string[] | null
+          num_hires: number | null
+          responsibilities: string | null
+          role_title: string
+          role_type: string
+          seniority: string
+          start_timeline: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          admin_notes?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          company_id: string
+          created_at?: string
+          engagement_type?: string | null
+          id?: string
+          must_have_skills?: string[] | null
+          nice_to_have_skills?: string[] | null
+          num_hires?: number | null
+          responsibilities?: string | null
+          role_title: string
+          role_type: string
+          seniority: string
+          start_timeline?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          additional_notes?: string | null
+          admin_notes?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          company_id?: string
+          created_at?: string
+          engagement_type?: string | null
+          id?: string
+          must_have_skills?: string[] | null
+          nice_to_have_skills?: string[] | null
+          num_hires?: number | null
+          responsibilities?: string | null
+          role_title?: string
+          role_type?: string
+          seniority?: string
+          start_timeline?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "candidate" | "company" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +494,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["candidate", "company", "admin"],
+    },
   },
 } as const
