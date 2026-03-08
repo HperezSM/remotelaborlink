@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
+import { Mail } from "lucide-react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     });
     setLoading(false);
     if (error) {
@@ -32,26 +33,26 @@ const ForgotPassword = () => {
         <div className="container mx-auto px-4 max-w-md">
           <div className="text-center mb-8">
             <span className="section-tag">Account Recovery</span>
-            <h1 className="font-display text-4xl md:text-5xl">RESET PASSWORD</h1>
+            <h1 className="font-display text-4xl md:text-5xl">RESET YOUR PASSWORD</h1>
           </div>
           <div className="card-surface p-8">
             {sent ? (
               <div className="text-center">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-primary text-2xl">✓</span>
+                  <Mail className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-display text-xl mb-2">CHECK YOUR EMAIL</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  We've sent a password reset link to <strong className="text-foreground">{email}</strong>. Click the link in the email to set a new password.
+                <p className="text-sm text-muted-foreground mb-2">
+                  If an account exists for <strong className="text-foreground">{email}</strong>, you'll receive a password reset link shortly.
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Didn't receive it?{" "}
-                  <button onClick={() => setSent(false)} className="text-primary hover:underline">Try again</button>
-                </p>
+                <p className="text-xs text-muted-foreground mb-4">The link expires in 1 hour.</p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/login/talent">Back to Login</Link>
+                </Button>
               </div>
             ) : (
               <>
-                <p className="text-sm text-muted-foreground mb-6">Enter your email address and we'll send you a link to reset your password.</p>
+                <p className="text-sm text-muted-foreground mb-6">Enter your email and we'll send you a reset link.</p>
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
                     <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Email</label>

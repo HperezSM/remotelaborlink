@@ -12,13 +12,13 @@ export function isFreeEmailDomain(email: string): boolean {
   return FREE_EMAIL_DOMAINS.includes(domain);
 }
 
-export async function signUpCandidate(email: string, password: string) {
+export async function signUpCandidate(email: string, password: string, fullName?: string) {
   return supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { app_role: "candidate" },
-      emailRedirectTo: window.location.origin,
+      data: { app_role: "candidate", full_name: fullName },
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   });
 }
@@ -27,21 +27,22 @@ export async function signUpCompany(
   email: string,
   password: string,
   companyName: string,
+  contactName?: string,
   companyWebsite?: string,
   companySize?: string,
   industry?: string,
   howHeard?: string
 ) {
   if (isFreeEmailDomain(email)) {
-    return { data: null, error: { message: "Please use your company email address" } };
+    return { data: null, error: { message: "Please use your official company email address" } };
   }
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { app_role: "company" },
-      emailRedirectTo: window.location.origin,
+      data: { app_role: "company", full_name: contactName },
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   });
 
@@ -52,6 +53,7 @@ export async function signUpCompany(
     user_id: data.user.id,
     company_name: companyName,
     company_email: email,
+    contact_person_name: contactName || null,
     company_website: companyWebsite || null,
     company_size: companySize || null,
     industry: industry || null,
