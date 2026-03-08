@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "@/lib/auth";
 import logoIcon from "@/assets/logo-icon.png";
-import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut, Calendar } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 
@@ -14,6 +14,7 @@ const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
   { label: "Role Requests", icon: FileText, id: "roles" },
   { label: "Talent Pool", icon: Users, id: "talent" },
+  { label: "Interviews", icon: Calendar, id: "interviews" },
   { label: "Compare", icon: Users, id: "compare" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
   { label: "Settings", icon: Settings, id: "settings" },
@@ -34,6 +35,13 @@ const CompanyDashboard = () => {
   const [pushedCandidates, setPushedCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRoleForm, setShowRoleForm] = useState(false);
+  const [interviews, setInterviews] = useState<any[]>([]);
+  const [scheduleModal, setScheduleModal] = useState<{ pushId: string; candidateId: string; candidateName: string } | null>(null);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+  const [scheduleDuration, setScheduleDuration] = useState(30);
+  const [scheduleMeetingLink, setScheduleMeetingLink] = useState("");
+  const [scheduleNotes, setScheduleNotes] = useState("");
 
   // Role request form
   const [roleForm, setRoleForm] = useState({
@@ -55,15 +63,16 @@ const CompanyDashboard = () => {
     const { data: co } = await supabase.from("companies").select("*").eq("user_id", user.id).single();
     setCompany(co);
     if (co) {
-      const [rrRes, pRes] = await Promise.all([
+      const [rrRes, pRes, ivRes] = await Promise.all([
         supabase.from("role_requests").select("*").eq("company_id", co.id).order("created_at", { ascending: false }),
         supabase.from("candidate_pushes").select("*").eq("company_id", co.id).order("pushed_at", { ascending: false }),
+        supabase.from("interviews").select("*").eq("company_id", co.id).order("scheduled_at", { ascending: true }),
       ]);
       setRoleRequests(rrRes.data || []);
       const pushData = pRes.data || [];
       setPushes(pushData);
+      setInterviews(ivRes.data || []);
 
-      // Fetch candidate profiles for pushed candidates
       if (pushData.length > 0) {
         const candidateIds = [...new Set(pushData.map(p => p.candidate_id))];
         const { data: cands } = await supabase.from("candidate_profiles").select("*").in("id", candidateIds);
@@ -103,6 +112,30 @@ const CompanyDashboard = () => {
     const { error } = await supabase.from("candidate_pushes").update({ company_action: action }).eq("id", pushId);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: `Candidate ${action}` }); fetchData(); }
+  };
+
+  const scheduleInterview = async () => {
+    if (!scheduleModal || !company || !scheduleDate || !scheduleTime) return;
+    const scheduledAt = new Date(`${scheduleDate}T${scheduleTime}`).toISOString();
+    const { error } = await supabase.from("interviews").insert({
+      candidate_push_id: scheduleModal.pushId,
+      company_id: company.id,
+      candidate_id: scheduleModal.candidateId,
+      scheduled_at: scheduledAt,
+      duration_minutes: scheduleDuration,
+      meeting_link: scheduleMeetingLink || null,
+      notes: scheduleNotes || null,
+    });
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: "Interview scheduled!" });
+      await updatePushAction(scheduleModal.pushId, "interview_requested");
+    }
+    setScheduleModal(null);
+    setScheduleDate("");
+    setScheduleTime("");
+    setScheduleMeetingLink("");
+    setScheduleNotes("");
   };
 
   const getStatusBadge = (status: string) => {
@@ -309,7 +342,7 @@ const CompanyDashboard = () => {
                           {p.company_action === "none" && (
                             <>
                               <button onClick={() => updatePushAction(p.id, "shortlisted")} className="text-xs text-primary font-bold hover:underline ml-3">Shortlist</button>
-                              <button onClick={() => updatePushAction(p.id, "interview_requested")} className="text-xs text-primary font-bold hover:underline">Request Interview</button>
+                              <button onClick={() => setScheduleModal({ pushId: p.id, candidateId: cand.id, candidateName: cand.full_name })} className="text-xs text-primary font-bold hover:underline">Schedule Interview</button>
                             </>
                           )}
                           {p.company_action !== "none" && (
@@ -318,6 +351,48 @@ const CompanyDashboard = () => {
                             </span>
                           )}
                         </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Interviews */}
+          {activeTab === "interviews" && (
+            <div>
+              {interviews.length === 0 ? (
+                <div className="card-surface p-12 text-center">
+                  <h3 className="font-display text-xl mb-2">NO INTERVIEWS SCHEDULED</h3>
+                  <p className="text-sm text-muted-foreground">Schedule interviews from the Talent Pool tab.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {interviews.map(iv => {
+                    const cand = pushedCandidates.find(c => c.id === iv.candidate_id);
+                    const isPast = new Date(iv.scheduled_at) < new Date();
+                    return (
+                      <div key={iv.id} className={`card-surface p-6 flex items-center justify-between ${isPast ? 'opacity-60' : ''}`}>
+                        <div className="flex items-center gap-4">
+                          {cand?.profile_photo_url ? (
+                            <img src={cand.profile_photo_url} alt="" className="avatar-sm" />
+                          ) : (
+                            <div className="avatar-initials-sm">{cand?.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2) || "?"}</div>
+                          )}
+                          <div>
+                            <h3 className="font-bold text-foreground">{cand?.full_name || "Unknown"}</h3>
+                            <p className="text-xs text-muted-foreground">{(cand?.roles_applied || []).join(", ")}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-foreground">{new Date(iv.scheduled_at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(iv.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {iv.duration_minutes}min</p>
+                          {iv.meeting_link && <a href={iv.meeting_link} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">Join Meeting</a>}
+                        </div>
+                        <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-semibold ${iv.status === 'scheduled' ? 'status-screening' : iv.status === 'completed' ? 'status-active' : 'status-rejected'}`}>
+                          {iv.status}
+                        </span>
                       </div>
                     );
                   })}
@@ -402,6 +477,33 @@ const CompanyDashboard = () => {
           )}
         </div>
       </main>
+
+      {/* Schedule Interview Modal */}
+      {scheduleModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="card-surface p-8 max-w-md w-full">
+            <h3 className="font-display text-xl mb-4">SCHEDULE INTERVIEW</h3>
+            <p className="text-sm text-muted-foreground mb-4">Schedule an interview with <strong className="text-foreground">{scheduleModal.candidateName}</strong></p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Date *</label><input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className={inputClass} /></div>
+                <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Time *</label><input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className={inputClass} /></div>
+              </div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Duration (min)</label>
+                <select value={scheduleDuration} onChange={e => setScheduleDuration(parseInt(e.target.value))} className={inputClass}>
+                  <option value={15}>15 min</option><option value={30}>30 min</option><option value={45}>45 min</option><option value={60}>60 min</option>
+                </select>
+              </div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Meeting Link</label><input value={scheduleMeetingLink} onChange={e => setScheduleMeetingLink(e.target.value)} placeholder="https://meet.google.com/..." className={inputClass} /></div>
+              <div><label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Notes</label><textarea value={scheduleNotes} onChange={e => setScheduleNotes(e.target.value)} rows={2} className={inputClass} placeholder="Any details..." /></div>
+              <div className="flex gap-3 justify-end">
+                <Button variant="outline" size="sm" onClick={() => setScheduleModal(null)}>Cancel</Button>
+                <Button size="sm" onClick={scheduleInterview} disabled={!scheduleDate || !scheduleTime} className="bg-primary text-primary-foreground font-bold">Schedule</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
