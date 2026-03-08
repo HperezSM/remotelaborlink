@@ -14,6 +14,7 @@ const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
   { label: "Role Requests", icon: FileText, id: "roles" },
   { label: "Talent Pool", icon: Users, id: "talent" },
+  { label: "Interviews", icon: Calendar, id: "interviews" },
   { label: "Compare", icon: Users, id: "compare" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
   { label: "Settings", icon: Settings, id: "settings" },
