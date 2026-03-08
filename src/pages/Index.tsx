@@ -60,11 +60,6 @@ const howItWorks = [
   { num: "03", title: "Hire & Start", desc: "Select your candidate. We handle onboarding logistics so they're productive from day one." },
 ];
 
-const testimonials = [
-  { quote: "Remote LaborLink cut our hiring timeline from 6 weeks to 3 days. The quality of candidates was unmatched.", initials: "JM", name: "Jake Morrison", title: "CTO, ScaleOps Inc.", stars: 5 },
-  { quote: "We've retained every placement for over a year. Their vetting process actually works.", initials: "SR", name: "Sarah Rivera", title: "VP People, GrowthBase", stars: 5 },
-  { quote: "The portal changed everything. No more back-and-forth emails — just curated profiles ready to go.", initials: "KP", name: "Kevin Park", title: "Founder, BuildRight", stars: 5 },
-];
 
 const Index = () => {
   return (
