@@ -34,9 +34,6 @@ const Footer = () => (
             <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
               <Mail size={14} /> {contactInfo.email}
             </a>
-            <a href={`tel:${contactInfo.phone.replace(/-/g, "")}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
-              <Phone size={14} /> {contactInfo.phone}
-            </a>
             <Link to="/login/company" className="block hover:text-foreground transition-colors mt-3">Client Portal</Link>
             <Link to="/signup/talent" className="block hover:text-foreground transition-colors">Apply as Talent</Link>
             <Link to="/signup/company" className="block hover:text-foreground transition-colors">Hire Talent</Link>

@@ -76,9 +76,6 @@ const Contact = () => {
                   <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
                     <Mail size={16} className="text-primary" /> {contactInfo.email}
                   </a>
-                  <a href={`tel:${contactInfo.phone.replace(/-/g, "")}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    <Phone size={16} className="text-primary" /> {contactInfo.phone}
-                  </a>
                 </div>
                 <SocialIconRow label="Follow us" />
               </div>
