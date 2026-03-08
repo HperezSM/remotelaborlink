@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
 import { signOut } from "@/lib/auth";
-import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut, BarChart3, Palette } from "lucide-react";
+import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut, BarChart3, Palette, Briefcase } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import ContentManagementTab from "@/components/admin/ContentManagementTab";
+import JobsManagementTab from "@/components/admin/JobsManagementTab";
+import FeatureFlagsSettings from "@/components/admin/FeatureFlagsSettings";
 import CandidateFilters, { filterCandidates } from "@/components/CandidateFilters";
 
 const sidebarItems = [
@@ -19,6 +21,7 @@ const sidebarItems = [
   { label: "Candidates", icon: Users, id: "candidates" },
   { label: "Companies", icon: Building2, id: "companies" },
   { label: "Role Requests", icon: FileText, id: "roles" },
+  { label: "Jobs", icon: Briefcase, id: "jobs" },
   { label: "Matches", icon: GitMerge, id: "matches" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
   { label: "Content", icon: Palette, id: "content" },
@@ -408,6 +411,11 @@ const AdminDashboard = () => {
             />
           )}
 
+          {/* Jobs Management */}
+          {activeTab === "jobs" && (
+            <JobsManagementTab companies={companies} />
+          )}
+
           {/* Content Management */}
           {activeTab === "content" && (
             <ContentManagementTab />
@@ -415,18 +423,21 @@ const AdminDashboard = () => {
 
           {/* Settings */}
           {activeTab === "settings" && (
-            <div className="card-surface p-8 max-w-md">
-              <h3 className="font-display text-xl mb-4">ADMIN SETTINGS</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Email</span>
-                  <span>{user?.email}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Company approval required</span>
-                  <span className="text-primary font-bold">Yes</span>
+            <div className="space-y-6">
+              <div className="card-surface p-8 max-w-md">
+                <h3 className="font-display text-xl mb-4">ADMIN SETTINGS</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Email</span>
+                    <span>{user?.email}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Company approval required</span>
+                    <span className="text-primary font-bold">Yes</span>
+                  </div>
                 </div>
               </div>
+              <FeatureFlagsSettings />
             </div>
           )}
         </div>

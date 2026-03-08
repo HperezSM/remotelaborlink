@@ -25,6 +25,7 @@ import CandidateProfileEdit from "./pages/talent/CandidateProfileEdit";
 import CandidateProfile from "./pages/talent/CandidateProfile";
 import CompanyDashboard from "./pages/company/CompanyDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import Jobs from "./pages/Jobs";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/legal" element={<Legal />} />
+            <Route path="/jobs" element={<Jobs />} />
 
             {/* Auth */}
             <Route path="/signup/talent" element={<CandidateSignup />} />
