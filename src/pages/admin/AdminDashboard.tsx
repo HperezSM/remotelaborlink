@@ -400,10 +400,12 @@ const AdminDashboard = () => {
 
           {/* Messages */}
           {activeTab === "messages" && (
-            <div className="card-surface p-12 text-center">
-              <h3 className="font-display text-xl mb-2">MESSAGING</h3>
-              <p className="text-sm text-muted-foreground">Unified messaging with candidates and companies coming in next phase.</p>
-            </div>
+            <MessagingPanel
+              contacts={[
+                ...candidates.map(c => ({ userId: c.user_id, name: c.full_name, role: "candidate" as const })),
+                ...companies.map(c => ({ userId: c.user_id, name: c.company_name, role: "company" as const })),
+              ]}
+            />
           )}
 
           {/* Settings */}
