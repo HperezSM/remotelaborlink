@@ -7,7 +7,7 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <Link to="/" className="block mb-4">
-            <img src={logoBanner} alt="Remote LaborLink" className="h-10 w-auto" />
+            <img src={logoFull} alt="Remote LaborLink" className="h-20 w-auto" />
           </Link>
           <p className="text-sm text-muted-foreground">We Place People, Not Resumes.</p>
         </div>
