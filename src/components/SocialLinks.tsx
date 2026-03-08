@@ -10,7 +10,6 @@ export const socialLinks = [
 
 export const contactInfo = {
   email: "team@remotelaborlink.com",
-  phone: "+502-3759-9665",
 };
 
 // Custom Pinterest icon (not in lucide)
