@@ -2,6 +2,9 @@ import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
+import TeamSection from "@/components/TeamSection";
+import PartnersCarousel from "@/components/PartnersCarousel";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 const values = [
   { emoji: "💎", title: "Quality", desc: "Every candidate, every process, every interaction reflects our commitment to excellence." },
