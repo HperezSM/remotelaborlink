@@ -27,7 +27,7 @@ const About = () => (
 
     {/* Logo showcase */}
     <section className="py-12 flex justify-center">
-      <img src={logoFull} alt="Remote LaborLink" className="h-28 w-auto" style={{ background: 'transparent' }} />
+      <img src={logoFull} alt="Remote LaborLink" className="logo-blend h-28 w-auto" />
     </section>
 
     {/* Mission / Vision */}

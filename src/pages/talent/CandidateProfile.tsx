@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PageLayout from "@/components/PageLayout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink } from "lucide-react";
+import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink, FileText } from "lucide-react";
 
 const CandidateProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -72,10 +72,10 @@ const CandidateProfile = () => {
           )}
           <div className="flex flex-col sm:flex-row items-start gap-6">
             {profile.profile_photo_url ? (
-              <img src={profile.profile_photo_url} alt={profile.full_name} className="w-24 h-24 rounded-full object-cover border-2 border-border" />
+              <img src={profile.profile_photo_url} alt={profile.full_name} className="avatar-lg" />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center font-display text-3xl text-muted-foreground">
-                {profile.full_name?.charAt(0)}
+              <div className="avatar-initials-lg">
+                {profile.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
               </div>
             )}
             <div className="flex-1">
@@ -176,16 +176,31 @@ const CandidateProfile = () => {
 
         {/* Admin-only: Resume download */}
         {isAdmin && profile.resume_url && (
-          <div className="mt-6">
+          <div className="file-card mt-6">
+            <div className="file-card-icon">
+              <FileText size={20} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-foreground">Resume</p>
+              <p className="text-[11px] font-mono text-muted-foreground">PDF · Admin only</p>
+            </div>
             <button
               onClick={async () => {
                 const { data } = await supabase.storage.from("resumes").createSignedUrl(profile.resume_url, 60);
                 if (data?.signedUrl) window.open(data.signedUrl, "_blank");
               }}
-              className="text-sm text-primary font-bold hover:underline"
+              className="text-xs text-primary font-bold hover:underline border border-primary/30 rounded px-3 py-1.5"
             >
-              📄 Download Resume (Admin only)
+              Download
             </button>
+          </div>
+        )}
+        {isAdmin && !profile.resume_url && (
+          <div className="file-card mt-6">
+            <div className="file-card-icon opacity-40">
+              <FileText size={20} />
+            </div>
+            <p className="text-sm text-muted-foreground">Resume not uploaded yet</p>
           </div>
         )}
       </div>

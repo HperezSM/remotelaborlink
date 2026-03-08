@@ -92,6 +92,81 @@
     background: radial-gradient(ellipse at center, hsl(46 85% 58% / 0.07) 0%, transparent 70%);
   }
 
+  /* Logo blend — makes black bg transparent on dark surfaces */
+  .logo-blend {
+    mix-blend-mode: lighten;
+  }
+
+  /* Avatar system */
+  .avatar-base {
+    @apply rounded-full object-cover;
+    object-position: center top;
+    border: 2px solid hsl(0 0% 16.5%);
+    background: hsl(0 0% 10%);
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .avatar-sm {
+    @apply avatar-base;
+    width: 36px;
+    height: 36px;
+    border-width: 1px;
+  }
+
+  .avatar-md {
+    @apply avatar-base;
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-lg {
+    @apply avatar-base;
+    width: 120px;
+    height: 120px;
+    border-width: 3px;
+  }
+
+  .avatar-initials {
+    @apply rounded-full flex items-center justify-center font-body font-bold;
+    background: hsl(0 0% 10%);
+    border: 2px solid hsl(0 0% 16.5%);
+    color: hsl(var(--primary));
+    flex-shrink: 0;
+  }
+
+  .avatar-initials-sm {
+    @apply avatar-initials;
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    border-width: 1px;
+  }
+
+  .avatar-initials-md {
+    @apply avatar-initials;
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+  }
+
+  .avatar-initials-lg {
+    @apply avatar-initials;
+    width: 120px;
+    height: 120px;
+    font-size: 36px;
+  }
+
+  /* Resume file card */
+  .file-card {
+    @apply card-surface p-4 flex items-center gap-3;
+  }
+
+  .file-card-icon {
+    @apply w-10 h-10 rounded-lg flex items-center justify-center text-primary;
+    background: hsl(46 85% 58% / 0.1);
+  }
+
   .status-active {
     background: rgba(40,200,64,0.12);
     color: #28c840;

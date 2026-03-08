@@ -121,7 +121,7 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <aside className="w-60 border-r border-border flex flex-col shrink-0" style={{ background: '#0a0a0a' }}>
         <div className="p-6 flex items-center gap-3">
-          <img src={logoIcon} alt="RL" className="h-8 w-8" style={{ background: 'transparent' }} />
+          <img src={logoIcon} alt="RL" className="logo-blend h-8 w-auto" />
           <span className="font-body font-bold text-xs tracking-[2px] text-foreground">ADMIN</span>
         </div>
         <nav className="flex-1 py-2">
@@ -223,10 +223,10 @@ const AdminDashboard = () => {
                           <td className="py-3 px-3">
                             <div className="flex items-center gap-3">
                               {c.profile_photo_url ? (
-                                <img src={c.profile_photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                <img src={c.profile_photo_url} alt="" className="avatar-sm" />
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-mono text-muted-foreground">
-                                  {c.full_name?.charAt(0)}
+                                <div className="avatar-initials-sm">
+                                  {c.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
                                 </div>
                               )}
                               <Link to={`/talent/${c.id}`} className="font-bold text-foreground hover:text-primary">{c.full_name}</Link>

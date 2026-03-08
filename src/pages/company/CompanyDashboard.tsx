@@ -133,7 +133,7 @@ const CompanyDashboard = () => {
       {/* Sidebar */}
       <aside className="w-60 border-r border-border flex flex-col shrink-0" style={{ background: '#0a0a0a' }}>
         <div className="p-6 flex items-center gap-3">
-          <img src={logoIcon} alt="RL" className="h-8 w-8" style={{ background: 'transparent' }} />
+          <img src={logoIcon} alt="RL" className="logo-blend h-8 w-auto" />
           <div className="flex flex-col">
             <span className="font-body font-bold text-xs tracking-[2px] text-foreground">PORTAL</span>
             <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[140px]">{company?.company_name}</span>
@@ -280,9 +280,11 @@ const CompanyDashboard = () => {
                       <div key={p.id} className="card-surface p-6">
                         <div className="flex items-start gap-4 mb-4">
                           {cand.profile_photo_url ? (
-                            <img src={cand.profile_photo_url} alt="" className="w-14 h-14 rounded-full object-cover" />
+                            <img src={cand.profile_photo_url} alt="" className="avatar-md" style={{ width: '56px', height: '56px' }} />
                           ) : (
-                            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center font-display text-xl text-muted-foreground">{cand.full_name?.charAt(0)}</div>
+                            <div className="avatar-initials-md" style={{ width: '56px', height: '56px', fontSize: '18px' }}>
+                              {cand.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
+                            </div>
                           )}
                           <div className="flex-1">
                             <h3 className="font-bold text-foreground text-lg">{cand.full_name}</h3>
