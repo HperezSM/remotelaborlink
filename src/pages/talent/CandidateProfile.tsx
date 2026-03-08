@@ -72,10 +72,10 @@ const CandidateProfile = () => {
           )}
           <div className="flex flex-col sm:flex-row items-start gap-6">
             {profile.profile_photo_url ? (
-              <img src={profile.profile_photo_url} alt={profile.full_name} className="w-24 h-24 rounded-full object-cover border-2 border-border" />
+              <img src={profile.profile_photo_url} alt={profile.full_name} className="avatar-lg" />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center font-display text-3xl text-muted-foreground">
-                {profile.full_name?.charAt(0)}
+              <div className="avatar-initials-lg">
+                {profile.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
               </div>
             )}
             <div className="flex-1">
