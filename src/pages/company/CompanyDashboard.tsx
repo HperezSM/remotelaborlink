@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "@/lib/auth";
 import logoIcon from "@/assets/logo-icon.png";
-import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut, Calendar } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 
