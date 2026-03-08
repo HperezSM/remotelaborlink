@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PageLayout from "@/components/PageLayout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink } from "lucide-react";
+import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink, FileText } from "lucide-react";
 
 const CandidateProfile = () => {
   const { id } = useParams<{ id: string }>();
