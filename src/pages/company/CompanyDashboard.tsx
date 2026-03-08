@@ -280,9 +280,11 @@ const CompanyDashboard = () => {
                       <div key={p.id} className="card-surface p-6">
                         <div className="flex items-start gap-4 mb-4">
                           {cand.profile_photo_url ? (
-                            <img src={cand.profile_photo_url} alt="" className="w-14 h-14 rounded-full object-cover" />
+                            <img src={cand.profile_photo_url} alt="" className="avatar-md" style={{ width: '56px', height: '56px' }} />
                           ) : (
-                            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center font-display text-xl text-muted-foreground">{cand.full_name?.charAt(0)}</div>
+                            <div className="avatar-initials-md" style={{ width: '56px', height: '56px', fontSize: '18px' }}>
+                              {cand.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
+                            </div>
                           )}
                           <div className="flex-1">
                             <h3 className="font-bold text-foreground text-lg">{cand.full_name}</h3>
