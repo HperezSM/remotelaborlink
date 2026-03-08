@@ -20,6 +20,10 @@ import CompanyLogin from "./pages/auth/CompanyLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import CheckEmail from "./pages/auth/CheckEmail";
+import Verified from "./pages/auth/Verified";
+import CompanyVerified from "./pages/auth/CompanyVerified";
+import AuthCallback from "./pages/auth/AuthCallback";
 import CandidateDashboard from "./pages/talent/CandidateDashboard";
 import CandidateProfileEdit from "./pages/talent/CandidateProfileEdit";
 import CandidateProfile from "./pages/talent/CandidateProfile";
@@ -56,6 +60,13 @@ const App = () => (
             <Route path="/login/talent" element={<CandidateLogin />} />
             <Route path="/login/company" element={<CompanyLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/check-email" element={<CheckEmail />} />
+            <Route path="/auth/verified" element={<Verified />} />
+            <Route path="/auth/company-verified" element={<CompanyVerified />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            {/* Legacy routes */}
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
