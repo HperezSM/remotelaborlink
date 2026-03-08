@@ -133,7 +133,7 @@ const CompanyDashboard = () => {
       {/* Sidebar */}
       <aside className="w-60 border-r border-border flex flex-col shrink-0" style={{ background: '#0a0a0a' }}>
         <div className="p-6 flex items-center gap-3">
-          <img src={logoIcon} alt="RL" className="h-8 w-8" style={{ background: 'transparent' }} />
+          <img src={logoIcon} alt="RL" className="logo-blend h-8 w-auto" />
           <div className="flex flex-col">
             <span className="font-body font-bold text-xs tracking-[2px] text-foreground">PORTAL</span>
             <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[140px]">{company?.company_name}</span>

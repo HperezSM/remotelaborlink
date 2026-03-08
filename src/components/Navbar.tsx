@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-[68px] px-[5%]">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logoIcon} alt="Remote LaborLink" className="h-9 w-9" style={{ background: 'transparent' }} />
+            <img src={logoIcon} alt="Remote LaborLink" className="logo-blend h-11 w-auto" />
             <span className="font-body font-bold text-sm tracking-[2px] text-foreground">REMOTE LABORLINK</span>
           </Link>
 

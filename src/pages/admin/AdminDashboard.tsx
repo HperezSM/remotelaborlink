@@ -121,7 +121,7 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <aside className="w-60 border-r border-border flex flex-col shrink-0" style={{ background: '#0a0a0a' }}>
         <div className="p-6 flex items-center gap-3">
-          <img src={logoIcon} alt="RL" className="h-8 w-8" style={{ background: 'transparent' }} />
+          <img src={logoIcon} alt="RL" className="logo-blend h-8 w-auto" />
           <span className="font-body font-bold text-xs tracking-[2px] text-foreground">ADMIN</span>
         </div>
         <nav className="flex-1 py-2">

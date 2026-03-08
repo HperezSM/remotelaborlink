@@ -29,7 +29,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-3 mb-8">
-          <img src={logoIcon} alt="Remote LaborLink" className="h-10 w-10" style={{ background: 'transparent' }} />
+          <img src={logoIcon} alt="Remote LaborLink" className="logo-blend h-10 w-auto" />
           <span className="font-body font-bold text-sm tracking-[2px] text-foreground">ADMIN</span>
         </div>
         <div className="card-surface p-8">
