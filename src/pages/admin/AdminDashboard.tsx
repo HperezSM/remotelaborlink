@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
 import { signOut } from "@/lib/auth";
 import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
+import MessagingPanel from "@/components/MessagingPanel";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
