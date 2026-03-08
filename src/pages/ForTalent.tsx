@@ -74,9 +74,9 @@ const ForTalent = () => (
       <div className="container mx-auto px-4 text-center relative z-10">
         <h2 className="font-display text-5xl md:text-6xl mb-4">APPLY. GET VETTED. GET PLACED.</h2>
         <p className="text-muted-foreground mb-8">The process starts with a single application.</p>
-        <Button asChild variant="hero" size="lg">
-          <Link to="/contact">Apply Now</Link>
-        </Button>
+          <Button asChild variant="hero" size="lg">
+            <Link to="/signup/talent">Apply Now</Link>
+          </Button>
       </div>
     </section>
   </PageLayout>
