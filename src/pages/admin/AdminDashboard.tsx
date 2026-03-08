@@ -186,6 +186,11 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          {/* Analytics */}
+          {activeTab === "analytics" && (
+            <AnalyticsTab candidates={candidates} companies={companies} roleRequests={roleRequests} pushes={pushes} />
+          )}
+
           {/* Candidates */}
           {activeTab === "candidates" && (
             <div>
