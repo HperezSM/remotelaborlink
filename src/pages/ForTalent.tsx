@@ -28,7 +28,7 @@ const ForTalent = () => (
         </p>
         <div className="mt-8 animate-fade-up-delay-2">
           <Button asChild variant="hero" size="lg">
-            <Link to="/contact">Apply Now</Link>
+            <Link to="/signup/talent">Apply Now</Link>
           </Button>
         </div>
       </div>
