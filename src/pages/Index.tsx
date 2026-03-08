@@ -251,32 +251,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <span className="section-tag">Testimonials</span>
-          <h2 className="font-display text-5xl md:text-6xl mb-14">WHAT CLIENTS SAY</h2>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <motion.div key={t.name} variants={fadeUp} className="card-surface p-8 hover:border-primary/30 transition-colors">
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <Star key={i} size={14} className="fill-primary text-primary" />
-                  ))}
-                </div>
-                <p className="italic text-[15px] text-muted-foreground leading-relaxed mb-6">"{t.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-mono text-xs text-primary">{t.initials}</div>
-                  <div>
-                    <div className="text-sm font-bold">{t.name}</div>
-                    <div className="text-xs font-mono text-muted-foreground">{t.title}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* Partners */}
+      <PartnersCarousel />
+
+      {/* Testimonials (DB-driven only) */}
+      <TestimonialsSection />
 
       {/* Bottom CTA */}
       <section className="py-28 relative overflow-hidden">
