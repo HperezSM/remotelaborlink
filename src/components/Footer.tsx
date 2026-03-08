@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logoFull from "@/assets/logo-full.png";
+import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
+import { Mail, Phone } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t border-border bg-background">
@@ -9,7 +11,8 @@ const Footer = () => (
           <Link to="/" className="block mb-4">
             <img src={logoFull} alt="Remote LaborLink" className="logo-blend h-20 w-auto" />
           </Link>
-          <p className="text-sm text-muted-foreground">We Place People, Not Resumes.</p>
+          <p className="text-sm text-muted-foreground mb-4">We Place People, Not Resumes.</p>
+          <SocialIconRow />
         </div>
         <div>
           <h4 className="font-body font-bold text-sm mb-3 text-foreground normal-case">Company</h4>
@@ -26,9 +29,15 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h4 className="font-body font-bold text-sm mb-3 text-foreground normal-case">Access</h4>
+          <h4 className="font-body font-bold text-sm mb-3 text-foreground normal-case">Get in Touch</h4>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <Link to="/login/company" className="block hover:text-foreground transition-colors">Client Portal</Link>
+            <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
+              <Mail size={14} /> {contactInfo.email}
+            </a>
+            <a href={`tel:${contactInfo.phone.replace(/-/g, "")}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
+              <Phone size={14} /> {contactInfo.phone}
+            </a>
+            <Link to="/login/company" className="block hover:text-foreground transition-colors mt-3">Client Portal</Link>
             <Link to="/signup/talent" className="block hover:text-foreground transition-colors">Apply as Talent</Link>
             <Link to="/signup/company" className="block hover:text-foreground transition-colors">Hire Talent</Link>
           </div>
