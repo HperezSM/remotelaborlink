@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logoFull from "@/assets/logo-full.png";
 import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t border-border bg-background">
