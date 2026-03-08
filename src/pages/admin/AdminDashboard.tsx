@@ -98,12 +98,7 @@ const AdminDashboard = () => {
     setPushNote("");
   };
 
-  const filteredCandidates = candidates.filter(c => {
-    if (candidateFilter.status && c.status !== candidateFilter.status) return false;
-    if (candidateFilter.role && !(c.roles_applied || []).some((r: string) => r.toLowerCase().includes(candidateFilter.role.toLowerCase()))) return false;
-    if (candidateFilter.search && !c.full_name?.toLowerCase().includes(candidateFilter.search.toLowerCase())) return false;
-    return true;
-  });
+  const filteredCandidates = filterCandidates(candidates, candidateFilter);
 
   const activeCompanies = companies.filter(c => c.status === "active");
 
