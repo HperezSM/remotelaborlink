@@ -201,6 +201,70 @@ export type Database = {
         }
         Relationships: []
       }
+      interviews: {
+        Row: {
+          candidate_id: string
+          candidate_push_id: string
+          company_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          meeting_link: string | null
+          notes: string | null
+          scheduled_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          candidate_push_id: string
+          company_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          candidate_push_id?: string
+          company_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviews_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interviews_candidate_push_id_fkey"
+            columns: ["candidate_push_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_pushes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
