@@ -17,47 +17,52 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logoIcon} alt="Remote LaborLink" className="h-9 w-9 rounded" />
-          <div className="flex flex-col leading-none">
-            <span className="font-mono text-[9px] tracking-[3px] text-muted-foreground uppercase">Remote</span>
-            <span className="font-display text-lg tracking-wide text-foreground">LABORLINK</span>
+    <nav className="fixed top-0 left-0 right-0 z-[100]" style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(12px)' }}>
+      <div className="border-b border-border">
+        <div className="flex items-center justify-between h-[68px] px-[5%]">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logoIcon} alt="Remote LaborLink" className="h-9 w-9" style={{ background: 'transparent' }} />
+            <span className="font-body font-bold text-sm tracking-[2px] text-foreground">REMOTE LABORLINK</span>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`text-[13px] font-body font-medium transition-colors hover:text-foreground ${
+                  location.pathname === link.to ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.to ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <div className="hidden md:flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Link to="/signup/talent">Apply as Talent</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Link to="/signup/company">Hire Talent</Link>
+            </Button>
+            <Button asChild size="default" className="bg-primary text-primary-foreground font-bold rounded hover:opacity-90">
+              <Link to="/login/company">Client Portal</Link>
+            </Button>
+          </div>
+
+          {/* Mobile toggle */}
+          <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-
-        <div className="hidden md:block">
-          <Button asChild variant="hero" size="default">
-            <Link to="/client-portal">Client Portal</Link>
-          </Button>
-        </div>
-
-        {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
+        <div className="md:hidden border-b border-border px-[5%] pb-4 pt-2 space-y-3" style={{ background: 'rgba(10,10,10,0.98)' }}>
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -70,9 +75,17 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          <Button asChild variant="hero" size="default" className="w-full">
-            <Link to="/client-portal" onClick={() => setMobileOpen(false)}>Client Portal</Link>
-          </Button>
+          <div className="pt-2 space-y-2">
+            <Button asChild variant="outline" size="default" className="w-full">
+              <Link to="/signup/talent" onClick={() => setMobileOpen(false)}>Apply as Talent</Link>
+            </Button>
+            <Button asChild variant="outline" size="default" className="w-full">
+              <Link to="/signup/company" onClick={() => setMobileOpen(false)}>Hire Talent</Link>
+            </Button>
+            <Button asChild size="default" className="w-full bg-primary text-primary-foreground font-bold">
+              <Link to="/login/company" onClick={() => setMobileOpen(false)}>Client Portal</Link>
+            </Button>
+          </div>
         </div>
       )}
     </nav>
