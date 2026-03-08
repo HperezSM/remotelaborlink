@@ -37,7 +37,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [candidateFilter, setCandidateFilter] = useState({ role: "", status: "", search: "" });
+  const [candidateFilter, setCandidateFilter] = useState({ search: "", role: "", seniority: "", country: "", status: "", minRate: "", maxRate: "" });
 
   useEffect(() => {
     if (role && role !== "admin") {
