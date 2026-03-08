@@ -221,7 +221,9 @@ const Index = () => {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {roles.map((r) => (
               <motion.div key={r.name} variants={fadeUp} className="card-surface p-8 hover:border-primary hover:-translate-y-1 transition-all duration-300 group">
-                <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">{r.emoji}</div>
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all">
+                  <r.icon size={24} className="text-primary" />
+                </div>
                 <h3 className="font-display text-2xl mb-2">{r.name}</h3>
                 <p className="text-[15px] text-muted-foreground leading-relaxed">{r.desc}</p>
               </motion.div>
