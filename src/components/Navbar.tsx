@@ -17,6 +17,16 @@ const baseNavLinks = [
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [jobBoardEnabled, setJobBoardEnabled] = useState(false);
+
+  useEffect(() => {
+    supabase.from("feature_flags").select("enabled").eq("flag_key", "job_board").single()
+      .then(({ data }) => { if (data) setJobBoardEnabled(data.enabled); });
+  }, []);
+
+  const navLinks = jobBoardEnabled
+    ? [...baseNavLinks.slice(0, 3), { label: "Jobs", to: "/jobs" }, ...baseNavLinks.slice(3)]
+    : baseNavLinks;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100]" style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(12px)' }}>

@@ -411,6 +411,11 @@ const AdminDashboard = () => {
             />
           )}
 
+          {/* Jobs Management */}
+          {activeTab === "jobs" && (
+            <JobsManagementTab companies={companies} />
+          )}
+
           {/* Content Management */}
           {activeTab === "content" && (
             <ContentManagementTab />
@@ -418,18 +423,21 @@ const AdminDashboard = () => {
 
           {/* Settings */}
           {activeTab === "settings" && (
-            <div className="card-surface p-8 max-w-md">
-              <h3 className="font-display text-xl mb-4">ADMIN SETTINGS</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Email</span>
-                  <span>{user?.email}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Company approval required</span>
-                  <span className="text-primary font-bold">Yes</span>
+            <div className="space-y-6">
+              <div className="card-surface p-8 max-w-md">
+                <h3 className="font-display text-xl mb-4">ADMIN SETTINGS</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Email</span>
+                    <span>{user?.email}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-muted-foreground">Company approval required</span>
+                    <span className="text-primary font-bold">Yes</span>
+                  </div>
                 </div>
               </div>
+              <FeatureFlagsSettings />
             </div>
           )}
         </div>
