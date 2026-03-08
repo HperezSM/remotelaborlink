@@ -18,15 +18,26 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [jobBoardEnabled, setJobBoardEnabled] = useState(false);
+  const [subscriptionsEnabled, setSubscriptionsEnabled] = useState(false);
 
   useEffect(() => {
-    supabase.from("feature_flags").select("enabled").eq("flag_key", "job_board").single()
-      .then(({ data }) => { if (data) setJobBoardEnabled(data.enabled); });
+    supabase.from("feature_flags").select("flag_key, enabled").in("flag_key", ["job_board", "company_subscriptions"])
+      .then(({ data }) => {
+        if (data) {
+          data.forEach((f: any) => {
+            if (f.flag_key === "job_board") setJobBoardEnabled(f.enabled);
+            if (f.flag_key === "company_subscriptions") setSubscriptionsEnabled(f.enabled);
+          });
+        }
+      });
   }, []);
 
-  const navLinks = jobBoardEnabled
-    ? [...baseNavLinks.slice(0, 3), { label: "Jobs", to: "/jobs" }, ...baseNavLinks.slice(3)]
-    : baseNavLinks;
+  const navLinks = [
+    ...baseNavLinks.slice(0, 3),
+    ...(jobBoardEnabled ? [{ label: "Jobs", to: "/jobs" }] : []),
+    ...baseNavLinks.slice(3),
+    ...(subscriptionsEnabled ? [{ label: "Pricing", to: "/pricing" }] : []),
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100]" style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(12px)' }}>

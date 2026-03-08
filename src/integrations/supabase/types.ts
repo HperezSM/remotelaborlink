@@ -289,6 +289,38 @@ export type Database = {
         }
         Relationships: []
       }
+      company_message_usage: {
+        Row: {
+          billing_period_start: string
+          company_id: string
+          id: string
+          messages_sent: number
+          updated_at: string
+        }
+        Insert: {
+          billing_period_start?: string
+          company_id: string
+          id?: string
+          messages_sent?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_period_start?: string
+          company_id?: string
+          id?: string
+          messages_sent?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_message_usage_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           enabled: boolean
