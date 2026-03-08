@@ -14,6 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      candidate_certifications: {
+        Row: {
+          candidate_id: string
+          file_name: string
+          file_type: string
+          file_url: string
+          id: string
+          uploaded_at: string
+        }
+        Insert: {
+          candidate_id: string
+          file_name: string
+          file_type?: string
+          file_url: string
+          id?: string
+          uploaded_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          file_name?: string
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_certifications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_portfolio_links: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          id: string
+          label: string | null
+          link_type: string
+          url: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          link_type?: string
+          url: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          link_type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_portfolio_links_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_profiles: {
         Row: {
           availability: string | null
@@ -24,12 +94,17 @@ export type Database = {
           employment_status: string | null
           english_proficiency: string | null
           expected_rate_usd: number | null
+          field_of_study: string | null
+          first_name: string | null
           full_name: string
+          github_url: string | null
           id: string
           industries: string[] | null
+          last_name: string | null
           linkedin_url: string | null
           loom_video_url: string | null
           onboarding_completed: boolean
+          phone: string | null
           portfolio_link: string | null
           portfolio_url: string | null
           profile_photo_url: string | null
@@ -40,6 +115,7 @@ export type Database = {
           status: string
           technical_skills: string[] | null
           updated_at: string
+          us_hours_available: string | null
           user_id: string
           work_type_preference: string | null
           years_experience: string | null
@@ -53,12 +129,17 @@ export type Database = {
           employment_status?: string | null
           english_proficiency?: string | null
           expected_rate_usd?: number | null
+          field_of_study?: string | null
+          first_name?: string | null
           full_name: string
+          github_url?: string | null
           id?: string
           industries?: string[] | null
+          last_name?: string | null
           linkedin_url?: string | null
           loom_video_url?: string | null
           onboarding_completed?: boolean
+          phone?: string | null
           portfolio_link?: string | null
           portfolio_url?: string | null
           profile_photo_url?: string | null
@@ -69,6 +150,7 @@ export type Database = {
           status?: string
           technical_skills?: string[] | null
           updated_at?: string
+          us_hours_available?: string | null
           user_id: string
           work_type_preference?: string | null
           years_experience?: string | null
@@ -82,12 +164,17 @@ export type Database = {
           employment_status?: string | null
           english_proficiency?: string | null
           expected_rate_usd?: number | null
+          field_of_study?: string | null
+          first_name?: string | null
           full_name?: string
+          github_url?: string | null
           id?: string
           industries?: string[] | null
+          last_name?: string | null
           linkedin_url?: string | null
           loom_video_url?: string | null
           onboarding_completed?: boolean
+          phone?: string | null
           portfolio_link?: string | null
           portfolio_url?: string | null
           profile_photo_url?: string | null
@@ -98,6 +185,7 @@ export type Database = {
           status?: string
           technical_skills?: string[] | null
           updated_at?: string
+          us_hours_available?: string | null
           user_id?: string
           work_type_preference?: string | null
           years_experience?: string | null
@@ -494,6 +582,42 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      profile_views: {
+        Row: {
+          candidate_id: string
+          company_id: string
+          id: string
+          viewed_at: string
+        }
+        Insert: {
+          candidate_id: string
+          company_id: string
+          id?: string
+          viewed_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          company_id?: string
+          id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_views_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_views_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       role_requests: {
         Row: {

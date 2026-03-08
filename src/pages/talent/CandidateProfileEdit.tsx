@@ -6,23 +6,23 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Upload, X, FileText } from "lucide-react";
 
-const LATAM_COUNTRIES = [
-  "Mexico", "Colombia", "Argentina", "Brazil", "Chile", "Peru", "Costa Rica", "Ecuador",
-  "Uruguay", "Panama", "Guatemala", "Dominican Republic", "Honduras", "El Salvador",
-  "Bolivia", "Paraguay", "Nicaragua", "Venezuela", "Cuba", "Puerto Rico",
+const COUNTRIES = [
+  "Guatemala", "El Salvador", "Honduras", "Nicaragua", "Costa Rica",
+  "Panama", "Colombia", "Venezuela", "Ecuador", "Peru", "Other",
 ];
 
 const ROLE_OPTIONS = [
-  "Project Manager", "Scrum Master", "Full Stack Developer", "Frontend Developer",
-  "Backend Developer", "UX/UI Designer", "Customer Support", "Operations Manager", "Other",
+  "Virtual Assistant (VA)", "Project Manager / Operations", "Software Development / Engineering",
+  "Customer Success / Support", "Marketing / Growth", "Sales / Business Development",
+  "Data / Analytics", "Finance / Accounting", "Other",
 ];
 
 const INDUSTRIES = ["SaaS", "Fintech", "Healthtech", "E-commerce", "Agency", "Hospitality Tech", "Cybersecurity", "Other"];
 
-const TOTAL_STEPS = 5;
-const STEP_LABELS = ["Personal Info", "Professional", "Skills", "Screening", "Review"];
+const TOTAL_STEPS = 6;
+const STEP_LABELS = ["Personal Info", "Professional", "Skills", "Media & Portfolio", "Screening", "Review"];
 
 const CandidateProfileEdit = () => {
   const { user } = useAuth();
@@ -32,46 +32,63 @@ const CandidateProfileEdit = () => {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [skillInput, setSkillInput] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [profileId, setProfileId] = useState<string | null>(null);
+
+  // Certifications state
+  const [certifications, setCertifications] = useState<any[]>([]);
+  const [portfolioLinks, setPortfolioLinks] = useState<{ link_type: string; url: string; label: string }[]>([]);
+  const [additionalPhotos, setAdditionalPhotos] = useState<string[]>([]);
 
   const [form, setForm] = useState({
-    full_name: "", country: "", city: "", linkedin_url: "", portfolio_url: "", profile_photo_url: "",
-    roles_applied: [] as string[], years_experience: "", seniority_level: "", employment_status: "",
-    availability: "", expected_rate_usd: "", work_type_preference: "",
+    first_name: "", last_name: "", full_name: "", country: "", other_country: "", city: "",
+    phone: "", linkedin_url: "", profile_photo_url: "",
+    field_of_study: "", roles_applied: [] as string[], years_experience: "", seniority_level: "",
+    employment_status: "", availability: "", expected_rate_usd: "", work_type_preference: "",
+    english_proficiency: "", us_hours_available: "",
     technical_skills: [] as string[], bio: "", proud_achievement: "", industries: [] as string[],
-    resume_url: "", loom_video_url: "", portfolio_link: "", english_proficiency: "",
+    github_url: "", portfolio_url: "",
+    resume_url: "", loom_video_url: "", portfolio_link: "",
     confirmed: false,
   });
 
-  // Load existing profile data
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       const { data } = await supabase.from("candidate_profiles").select("*").eq("user_id", user.id).single();
       if (data) {
+        setProfileId(data.id);
+        const names = (data.full_name || "").split(" ");
         setForm(f => ({
           ...f,
+          first_name: (data as any).first_name || names[0] || "",
+          last_name: (data as any).last_name || names.slice(1).join(" ") || "",
           full_name: data.full_name || "",
-          country: data.country || "",
-          city: data.city || "",
-          linkedin_url: data.linkedin_url || "",
-          portfolio_url: data.portfolio_url || "",
+          country: data.country || "", city: data.city || "",
+          phone: (data as any).phone || "",
+          linkedin_url: data.linkedin_url || "", portfolio_url: data.portfolio_url || "",
           profile_photo_url: data.profile_photo_url || "",
-          roles_applied: data.roles_applied || [],
-          years_experience: data.years_experience || "",
-          seniority_level: data.seniority_level || "",
-          employment_status: data.employment_status || "",
+          field_of_study: (data as any).field_of_study || "",
+          roles_applied: data.roles_applied || [], years_experience: data.years_experience || "",
+          seniority_level: data.seniority_level || "", employment_status: data.employment_status || "",
           availability: data.availability || "",
           expected_rate_usd: data.expected_rate_usd?.toString() || "",
           work_type_preference: data.work_type_preference || "",
-          technical_skills: data.technical_skills || [],
-          bio: data.bio || "",
-          proud_achievement: data.proud_achievement || "",
-          industries: data.industries || [],
-          resume_url: data.resume_url || "",
-          loom_video_url: data.loom_video_url || "",
-          portfolio_link: data.portfolio_link || "",
           english_proficiency: data.english_proficiency || "",
+          us_hours_available: (data as any).us_hours_available || "",
+          technical_skills: data.technical_skills || [], bio: data.bio || "",
+          proud_achievement: data.proud_achievement || "", industries: data.industries || [],
+          github_url: (data as any).github_url || "",
+          resume_url: data.resume_url || "", loom_video_url: data.loom_video_url || "",
+          portfolio_link: data.portfolio_link || "",
         }));
+
+        // Load certifications
+        const { data: certs } = await supabase.from("candidate_certifications").select("*").eq("candidate_id", data.id);
+        if (certs) setCertifications(certs);
+
+        // Load portfolio links
+        const { data: links } = await supabase.from("candidate_portfolio_links").select("*").eq("candidate_id", data.id);
+        if (links) setPortfolioLinks(links.map((l: any) => ({ link_type: l.link_type, url: l.url, label: l.label || "" })));
       }
       setLoadingProfile(false);
     };
@@ -100,41 +117,54 @@ const CandidateProfileEdit = () => {
     updateField("technical_skills", form.technical_skills.filter(s => s !== skill));
   };
 
-  // Validation per step
   const validateStep = (s: number): boolean => {
     const errs: Record<string, string> = {};
     if (s === 1) {
-      if (!form.full_name.trim()) errs.full_name = "Name is required";
+      if (!form.first_name.trim()) errs.first_name = "First name is required";
+      if (!form.last_name.trim()) errs.last_name = "Last name is required";
       if (!form.country) errs.country = "Country is required";
+      if (form.country === "Other" && !form.other_country.trim()) errs.other_country = "Please specify your country";
       if (!form.city.trim()) errs.city = "City is required";
+      if (!form.phone.trim()) errs.phone = "Phone number is required";
+      if (!form.linkedin_url.trim()) errs.linkedin_url = "LinkedIn URL is required";
     }
     if (s === 2) {
       if (form.roles_applied.length === 0) errs.roles_applied = "Select at least one role";
+      if (!form.english_proficiency) errs.english_proficiency = "English level is required";
+      if (!form.expected_rate_usd) errs.expected_rate_usd = "Salary expectation is required";
+      if (!form.us_hours_available) errs.us_hours_available = "Please select availability for US hours";
     }
-    if (s === 4) {
+    if (s === 5) {
+      if (!form.loom_video_url.trim()) errs.loom_video_url = "Loom video is required";
       if (form.loom_video_url && !form.loom_video_url.includes("loom.com")) errs.loom_video_url = "Must be a valid Loom URL";
+      if (!form.resume_url) errs.resume_url = "Resume is required";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const goNext = () => {
-    if (validateStep(step)) setStep(s => s + 1);
-  };
+  const goNext = () => { if (validateStep(step)) setStep(s => s + 1); };
 
-  // Auto-save draft on step change
+  const computeFullName = () => `${form.first_name.trim()} ${form.last_name.trim()}`.trim();
+
+  // Auto-save draft
   useEffect(() => {
     if (!user || loadingProfile || step === 1) return;
     const timer = setTimeout(() => {
+      const fullName = computeFullName();
       supabase.from("candidate_profiles").upsert({
         user_id: user.id,
-        full_name: form.full_name || "Draft",
-        country: form.country || "Unknown",
+        full_name: fullName || "Draft",
+        first_name: form.first_name || null,
+        last_name: form.last_name || null,
+        country: form.country === "Other" ? form.other_country || "Other" : form.country || "Unknown",
         city: form.city || "Unknown",
+        phone: form.phone || null,
         roles_applied: form.roles_applied,
         linkedin_url: form.linkedin_url || null,
         portfolio_url: form.portfolio_url || null,
         profile_photo_url: form.profile_photo_url || null,
+        field_of_study: form.field_of_study || null,
         years_experience: form.years_experience || null,
         seniority_level: form.seniority_level || null,
         employment_status: form.employment_status || null,
@@ -149,8 +179,10 @@ const CandidateProfileEdit = () => {
         loom_video_url: form.loom_video_url || null,
         portfolio_link: form.portfolio_link || null,
         english_proficiency: form.english_proficiency || null,
+        us_hours_available: form.us_hours_available || null,
+        github_url: form.github_url || null,
         onboarding_completed: false,
-      }, { onConflict: "user_id" });
+      } as any, { onConflict: "user_id" });
     }, 1000);
     return () => clearTimeout(timer);
   }, [step]);
@@ -165,6 +197,42 @@ const CandidateProfileEdit = () => {
     const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
     updateField("profile_photo_url", publicUrl);
     toast({ title: "Photo uploaded!" });
+  };
+
+  const handleAdditionalPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || additionalPhotos.length >= 3) return;
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Max 5MB per photo", variant: "destructive" }); return; }
+    const path = `${user.id}/extra-${Date.now()}.${file.name.split('.').pop()}`;
+    const { error } = await supabase.storage.from("candidate-photos").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    const { data: { publicUrl } } = supabase.storage.from("candidate-photos").getPublicUrl(path);
+    setAdditionalPhotos(prev => [...prev, publicUrl]);
+    toast({ title: "Photo added!" });
+  };
+
+  const handleCertUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !profileId || certifications.length >= 5) return;
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Max 5MB", variant: "destructive" }); return; }
+    const path = `${user.id}/${Date.now()}-${file.name}`;
+    const { error: uploadErr } = await supabase.storage.from("certifications").upload(path, file);
+    if (uploadErr) { toast({ title: "Upload failed", description: uploadErr.message, variant: "destructive" }); return; }
+    const { error } = await supabase.from("candidate_certifications").insert({
+      candidate_id: profileId,
+      file_url: path,
+      file_name: file.name,
+      file_type: file.type.includes("pdf") ? "pdf" : "image",
+    });
+    if (error) { toast({ title: "Error saving cert", description: error.message, variant: "destructive" }); return; }
+    const { data: certs } = await supabase.from("candidate_certifications").select("*").eq("candidate_id", profileId);
+    if (certs) setCertifications(certs);
+    toast({ title: "Certification uploaded!" });
+  };
+
+  const removeCert = async (certId: string) => {
+    await supabase.from("candidate_certifications").delete().eq("id", certId);
+    setCertifications(prev => prev.filter(c => c.id !== certId));
   };
 
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,14 +250,20 @@ const CandidateProfileEdit = () => {
   const handleSubmit = async () => {
     if (!user || !form.confirmed) return;
     setLoading(true);
+    const fullName = computeFullName();
+    const country = form.country === "Other" ? form.other_country : form.country;
     const { error } = await supabase.from("candidate_profiles").upsert({
       user_id: user.id,
-      full_name: form.full_name,
-      country: form.country,
+      full_name: fullName,
+      first_name: form.first_name,
+      last_name: form.last_name,
+      country,
       city: form.city,
+      phone: form.phone || null,
       linkedin_url: form.linkedin_url || null,
       portfolio_url: form.portfolio_url || null,
       profile_photo_url: form.profile_photo_url || null,
+      field_of_study: form.field_of_study || null,
       roles_applied: form.roles_applied,
       years_experience: form.years_experience || null,
       seniority_level: form.seniority_level || null,
@@ -205,9 +279,23 @@ const CandidateProfileEdit = () => {
       loom_video_url: form.loom_video_url || null,
       portfolio_link: form.portfolio_link || null,
       english_proficiency: form.english_proficiency || null,
+      us_hours_available: form.us_hours_available || null,
+      github_url: form.github_url || null,
       onboarding_completed: true,
       status: "pending_review",
-    }, { onConflict: "user_id" });
+    } as any, { onConflict: "user_id" });
+
+    // Save portfolio links
+    if (profileId) {
+      await supabase.from("candidate_portfolio_links").delete().eq("candidate_id", profileId);
+      const linksToInsert = portfolioLinks.filter(l => l.url.trim());
+      if (linksToInsert.length > 0) {
+        await supabase.from("candidate_portfolio_links").insert(
+          linksToInsert.map(l => ({ candidate_id: profileId, link_type: l.link_type, url: l.url, label: l.label || null }))
+        );
+      }
+    }
+
     setLoading(false);
     if (error) {
       toast({ title: "Error saving profile", description: error.message, variant: "destructive" });
@@ -220,14 +308,6 @@ const CandidateProfileEdit = () => {
   const inputClass = "w-full bg-background border border-border rounded px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors";
   const labelClass = "text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block";
   const errorClass = "text-xs text-destructive mt-1";
-
-  const stepComplete = (s: number) => {
-    if (s === 1) return !!form.full_name && !!form.country && !!form.city;
-    if (s === 2) return form.roles_applied.length > 0;
-    if (s === 3) return form.technical_skills.length > 0;
-    if (s === 4) return !!form.resume_url || !!form.loom_video_url;
-    return false;
-  };
 
   if (loadingProfile) {
     return (
@@ -278,18 +358,46 @@ const CandidateProfileEdit = () => {
               <div className="space-y-4">
                 <h2 className="font-display text-2xl mb-4">PERSONAL INFO</h2>
                 <p className="text-sm text-muted-foreground mb-2">Start with the basics so we know who you are.</p>
-                <div>
-                  <label className={labelClass}>Full Name *</label>
-                  <input value={form.full_name} onChange={e => updateField("full_name", e.target.value)} placeholder="Your full name" className={`${inputClass} ${errors.full_name ? 'border-destructive' : ''}`} />
-                  {errors.full_name && <p className={errorClass}>{errors.full_name}</p>}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Full First Name (as in your ID) *</label>
+                    <input value={form.first_name} onChange={e => updateField("first_name", e.target.value)} placeholder="First name" className={`${inputClass} ${errors.first_name ? 'border-destructive' : ''}`} />
+                    {errors.first_name && <p className={errorClass}>{errors.first_name}</p>}
+                  </div>
+                  <div>
+                    <label className={labelClass}>Full Last Name (as in your ID) *</label>
+                    <input value={form.last_name} onChange={e => updateField("last_name", e.target.value)} placeholder="Last name" className={`${inputClass} ${errors.last_name ? 'border-destructive' : ''}`} />
+                    {errors.last_name && <p className={errorClass}>{errors.last_name}</p>}
+                  </div>
                 </div>
                 <div>
-                  <label className={labelClass}>Country *</label>
+                  <label className={labelClass}>Email (preferably Gmail) *</label>
+                  <input value={user?.email || ""} disabled className={`${inputClass} opacity-60`} />
+                  <p className="text-[10px] text-muted-foreground mt-1">Uses your account email</p>
+                </div>
+                <div>
+                  <label className={labelClass}>Mobile Phone Number (with area code) *</label>
+                  <input value={form.phone} onChange={e => updateField("phone", e.target.value)} placeholder="+502 1234 5678" className={`${inputClass} ${errors.phone ? 'border-destructive' : ''}`} />
+                  {errors.phone && <p className={errorClass}>{errors.phone}</p>}
+                </div>
+                <div>
+                  <label className={labelClass}>LinkedIn Profile URL *</label>
+                  <input value={form.linkedin_url} onChange={e => updateField("linkedin_url", e.target.value)} placeholder="https://linkedin.com/in/..." className={`${inputClass} ${errors.linkedin_url ? 'border-destructive' : ''}`} />
+                  {errors.linkedin_url && <p className={errorClass}>{errors.linkedin_url}</p>}
+                </div>
+                <div>
+                  <label className={labelClass}>Country of Residence *</label>
                   <select value={form.country} onChange={e => updateField("country", e.target.value)} className={`${inputClass} ${errors.country ? 'border-destructive' : ''}`}>
                     <option value="">Select country...</option>
-                    {LATAM_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   {errors.country && <p className={errorClass}>{errors.country}</p>}
+                  {form.country === "Other" && (
+                    <div className="mt-2">
+                      <input value={form.other_country} onChange={e => updateField("other_country", e.target.value)} placeholder="Enter your country" className={`${inputClass} ${errors.other_country ? 'border-destructive' : ''}`} />
+                      {errors.other_country && <p className={errorClass}>{errors.other_country}</p>}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className={labelClass}>City *</label>
@@ -297,21 +405,13 @@ const CandidateProfileEdit = () => {
                   {errors.city && <p className={errorClass}>{errors.city}</p>}
                 </div>
                 <div>
-                  <label className={labelClass}>LinkedIn URL</label>
-                  <input value={form.linkedin_url} onChange={e => updateField("linkedin_url", e.target.value)} placeholder="https://linkedin.com/in/..." className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Portfolio / Website</label>
-                  <input value={form.portfolio_url} onChange={e => updateField("portfolio_url", e.target.value)} placeholder="https://..." className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Profile Photo</label>
+                  <label className={labelClass}>Profile Photo *</label>
                   <div className="flex items-center gap-4">
                     {form.profile_photo_url ? (
                       <img src={form.profile_photo_url} alt="Preview" className="avatar-md" style={{ width: '56px', height: '56px' }} />
                     ) : (
                       <div className="avatar-initials-md" style={{ width: '56px', height: '56px', fontSize: '18px' }}>
-                        {form.full_name ? form.full_name.split(" ").map(n => n.charAt(0)).join("").slice(0, 2) : "?"}
+                        {form.first_name ? form.first_name.charAt(0) + (form.last_name?.charAt(0) || "") : "?"}
                       </div>
                     )}
                     <div className="flex-1">
@@ -329,7 +429,47 @@ const CandidateProfileEdit = () => {
                 <h2 className="font-display text-2xl mb-4">PROFESSIONAL IDENTITY</h2>
                 <p className="text-sm text-muted-foreground mb-2">Tell us about your experience and what you're looking for.</p>
                 <div>
-                  <label className={labelClass}>Role(s) applying for *</label>
+                  <label className={labelClass}>Field of Study / Major</label>
+                  <input value={form.field_of_study} onChange={e => updateField("field_of_study", e.target.value)} placeholder="e.g. Computer Science, Business Administration" className={inputClass} />
+                </div>
+                <div>
+                  <label className={labelClass}>Years of full-time remote work experience *</label>
+                  <select value={form.years_experience} onChange={e => updateField("years_experience", e.target.value)} className={inputClass}>
+                    <option value="">Select...</option>
+                    <option value="Less than 1 year">Less than 1 year</option>
+                    <option value="1-2 years">1–2 years</option>
+                    <option value="3-5 years">3–5 years</option>
+                    <option value="5-10 years">5–10 years</option>
+                    <option value="10+">10+ years</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Current Employment Status *</label>
+                  <select value={form.employment_status} onChange={e => updateField("employment_status", e.target.value)} className={inputClass}>
+                    <option value="">Select...</option>
+                    <option value="Employed full-time">Employed full-time</option>
+                    <option value="Employed full-time & Open">Employed full-time & Open to opportunities</option>
+                    <option value="Employed part-time">Employed part-time</option>
+                    <option value="Freelancing">Freelancing</option>
+                    <option value="Open to opportunities">Open to opportunities</option>
+                    <option value="Actively seeking">Actively seeking</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>English Level *</label>
+                  <select value={form.english_proficiency} onChange={e => updateField("english_proficiency", e.target.value)} className={`${inputClass} ${errors.english_proficiency ? 'border-destructive' : ''}`}>
+                    <option value="">Select...</option>
+                    <option value="A1-A2">A1–A2 (Basic)</option>
+                    <option value="B1">B1 (Intermediate)</option>
+                    <option value="B2">B2 (Upper Intermediate)</option>
+                    <option value="C1">C1 (Advanced)</option>
+                    <option value="C2/Native">C2 / Native</option>
+                  </select>
+                  {errors.english_proficiency && <p className={errorClass}>{errors.english_proficiency}</p>}
+                  <p className="text-[10px] text-muted-foreground mt-1">An English test will be required later in the process</p>
+                </div>
+                <div>
+                  <label className={labelClass}>Role(s) Interested In *</label>
                   <div className="flex flex-wrap gap-2">
                     {ROLE_OPTIONS.map(role => (
                       <button key={role} type="button" onClick={() => toggleArrayItem("roles_applied", role)}
@@ -342,64 +482,20 @@ const CandidateProfileEdit = () => {
                   </div>
                   {errors.roles_applied && <p className={errorClass}>{errors.roles_applied}</p>}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Years of Experience</label>
-                    <select value={form.years_experience} onChange={e => updateField("years_experience", e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option value="1-3">1–3 years</option>
-                      <option value="4-6">4–6 years</option>
-                      <option value="7-10">7–10 years</option>
-                      <option value="10+">10+ years</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={labelClass}>Seniority Level</label>
-                    <select value={form.seniority_level} onChange={e => updateField("seniority_level", e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option value="Mid">Mid</option>
-                      <option value="Senior">Senior</option>
-                      <option value="Lead/Principal">Lead / Principal</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className={labelClass}>Salary Expectation (USD/month) *</label>
+                  <input type="number" value={form.expected_rate_usd} onChange={e => updateField("expected_rate_usd", e.target.value)} placeholder="3000" className={`${inputClass} ${errors.expected_rate_usd ? 'border-destructive' : ''}`} />
+                  {errors.expected_rate_usd && <p className={errorClass}>{errors.expected_rate_usd}</p>}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Employment Status</label>
-                    <select value={form.employment_status} onChange={e => updateField("employment_status", e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option value="Employed">Employed</option>
-                      <option value="Freelancing">Freelancing</option>
-                      <option value="Open to work">Open to work</option>
-                      <option value="Between roles">Between roles</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={labelClass}>Availability</label>
-                    <select value={form.availability} onChange={e => updateField("availability", e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option value="Immediate">Immediate</option>
-                      <option value="2 weeks">2 weeks</option>
-                      <option value="1 month">1 month</option>
-                      <option value="Just exploring">Just exploring</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Expected Rate (USD/mo)</label>
-                    <input type="number" value={form.expected_rate_usd} onChange={e => updateField("expected_rate_usd", e.target.value)} placeholder="3000" className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Work Type</label>
-                    <select value={form.work_type_preference} onChange={e => updateField("work_type_preference", e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Contract">Contract</option>
-                      <option value="Any">Any</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className={labelClass}>Available for US Business Hours *</label>
+                  <select value={form.us_hours_available} onChange={e => updateField("us_hours_available", e.target.value)} className={`${inputClass} ${errors.us_hours_available ? 'border-destructive' : ''}`}>
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes (at least 2–3 hour overlap)</option>
+                    <option value="No">No</option>
+                    <option value="Flexible">Flexible</option>
+                  </select>
+                  {errors.us_hours_available && <p className={errorClass}>{errors.us_hours_available}</p>}
                 </div>
               </div>
             )}
@@ -452,56 +548,126 @@ const CandidateProfileEdit = () => {
               </div>
             )}
 
-            {/* Step 4: Screening Materials */}
+            {/* Step 4: Media & Portfolio */}
             {step === 4 && (
               <div className="space-y-4">
-                <h2 className="font-display text-2xl mb-4">SCREENING MATERIALS</h2>
-                <p className="text-sm text-muted-foreground mb-2">Upload your resume and record a short intro video.</p>
+                <h2 className="font-display text-2xl mb-4">MAKE YOUR PROFILE STAND OUT</h2>
+                <p className="text-sm text-muted-foreground mb-2">Add photos, certifications, and links to showcase your work.</p>
+
+                {/* Additional photos */}
                 <div>
-                  <label className={labelClass}>Resume (PDF, max 5MB)</label>
-                  <input type="file" accept=".pdf" onChange={handleResumeUpload} className={inputClass} />
-                  {form.resume_url && <p className="text-xs text-primary mt-1 flex items-center gap-1"><CheckCircle2 size={12} /> Resume uploaded</p>}
+                  <label className={labelClass}>Additional Photos (up to 3)</label>
+                  <p className="text-xs text-muted-foreground mb-2">Add photos that show your work environment or professional presence</p>
+                  <div className="flex gap-3 mb-2">
+                    {additionalPhotos.map((url, i) => (
+                      <div key={i} className="relative">
+                        <img src={url} alt="" className="w-[160px] h-[120px] object-cover rounded-lg border border-border" />
+                        <button onClick={() => setAdditionalPhotos(prev => prev.filter((_, idx) => idx !== i))}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {additionalPhotos.length < 3 && (
+                    <input type="file" accept="image/*" onChange={handleAdditionalPhotoUpload} className={inputClass} />
+                  )}
+                  <p className="text-[10px] text-muted-foreground mt-1">JPG/PNG, max 5MB each</p>
                 </div>
+
+                {/* Certifications */}
                 <div>
-                  <label className={labelClass}>Loom Video Introduction</label>
-                  <p className="text-xs text-muted-foreground mb-2">Record a 2–3 min intro. Tell us who you are and what you do best. <a href="https://loom.com/record" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">🎥 Record on Loom</a></p>
-                  <input value={form.loom_video_url} onChange={e => updateField("loom_video_url", e.target.value)} placeholder="https://www.loom.com/share/..." className={`${inputClass} ${errors.loom_video_url ? 'border-destructive' : ''}`} />
-                  {errors.loom_video_url && <p className={errorClass}>{errors.loom_video_url}</p>}
+                  <label className={labelClass}>Certifications & Credentials (up to 5)</label>
+                  <p className="text-xs text-muted-foreground mb-2">Upload certifications, diplomas, or credentials (PDF or image)</p>
+                  {certifications.map(cert => (
+                    <div key={cert.id} className="flex items-center gap-3 mb-2 card-surface p-3">
+                      <div className="file-card-icon w-8 h-8">
+                        <FileText size={14} />
+                      </div>
+                      <span className="text-sm flex-1 truncate">{cert.file_name}</span>
+                      <button onClick={() => removeCert(cert.id)} className="text-xs text-destructive hover:underline">Remove</button>
+                    </div>
+                  ))}
+                  {certifications.length < 5 && (
+                    <input type="file" accept=".pdf,image/*" onChange={handleCertUpload} className={inputClass} />
+                  )}
                 </div>
+
+                {/* GitHub */}
                 <div>
-                  <label className={labelClass}>GitHub / Behance / Dribbble (optional)</label>
-                  <input value={form.portfolio_link} onChange={e => updateField("portfolio_link", e.target.value)} placeholder="https://github.com/..." className={inputClass} />
+                  <label className={labelClass}>GitHub</label>
+                  <input value={form.github_url} onChange={e => updateField("github_url", e.target.value)} placeholder="https://github.com/username" className={inputClass} />
                 </div>
+
+                {/* Portfolio / project link */}
                 <div>
-                  <label className={labelClass}>English Proficiency</label>
-                  <select value={form.english_proficiency} onChange={e => updateField("english_proficiency", e.target.value)} className={inputClass}>
-                    <option value="">Select...</option>
-                    <option value="B1">B1 — Intermediate</option>
-                    <option value="B2">B2 — Upper Intermediate</option>
-                    <option value="C1">C1 — Advanced</option>
-                    <option value="Native">Native / Near-native</option>
-                  </select>
-                  <p className="text-[10px] text-muted-foreground mt-1">We verify this during our screening call</p>
+                  <label className={labelClass}>Portfolio, Notion Page, or Project Showcase</label>
+                  <input value={form.portfolio_url} onChange={e => updateField("portfolio_url", e.target.value)} placeholder="https://yourproject.com or Notion link" className={inputClass} />
+                </div>
+
+                {/* Additional links */}
+                <div>
+                  <label className={labelClass}>Other Links (Behance, Dribbble, personal site, etc.)</label>
+                  {portfolioLinks.map((link, i) => (
+                    <div key={i} className="flex gap-2 mb-2">
+                      <input value={link.url} onChange={e => {
+                        const updated = [...portfolioLinks];
+                        updated[i] = { ...updated[i], url: e.target.value };
+                        setPortfolioLinks(updated);
+                      }} placeholder="https://..." className={`${inputClass} flex-1`} />
+                      <button onClick={() => setPortfolioLinks(prev => prev.filter((_, idx) => idx !== i))}
+                        className="text-destructive hover:underline text-xs px-2">Remove</button>
+                    </div>
+                  ))}
+                  {portfolioLinks.length < 2 && (
+                    <Button type="button" variant="outline" size="sm"
+                      onClick={() => setPortfolioLinks(prev => [...prev, { link_type: "other", url: "", label: "" }])}>
+                      + Add Link
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Step 5: Review & Submit */}
+            {/* Step 5: Screening Materials */}
             {step === 5 && (
+              <div className="space-y-4">
+                <h2 className="font-display text-2xl mb-4">SCREENING MATERIALS</h2>
+                <p className="text-sm text-muted-foreground mb-2">Upload your resume and record a short intro video.</p>
+                <div>
+                  <label className={labelClass}>Loom Video Introduction *</label>
+                  <p className="text-xs text-muted-foreground mb-2">Record a 2–3 min Loom video. Tell us who you are, what you do best, and what you're looking for. Paste the link here. <a href="https://loom.com/record" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">🎥 Record on Loom</a></p>
+                  <input value={form.loom_video_url} onChange={e => updateField("loom_video_url", e.target.value)} placeholder="https://www.loom.com/share/..." className={`${inputClass} ${errors.loom_video_url ? 'border-destructive' : ''}`} />
+                  {errors.loom_video_url && <p className={errorClass}>{errors.loom_video_url}</p>}
+                </div>
+                <div>
+                  <label className={labelClass}>Resume (PDF only, max 5MB) *</label>
+                  <input type="file" accept=".pdf" onChange={handleResumeUpload} className={inputClass} />
+                  {form.resume_url && <p className="text-xs text-primary mt-1 flex items-center gap-1"><CheckCircle2 size={12} /> Resume uploaded</p>}
+                  {errors.resume_url && <p className={errorClass}>{errors.resume_url}</p>}
+                </div>
+              </div>
+            )}
+
+            {/* Step 6: Review & Submit */}
+            {step === 6 && (
               <div className="space-y-6">
                 <h2 className="font-display text-2xl mb-4">REVIEW & SUBMIT</h2>
                 <p className="text-sm text-muted-foreground mb-2">Double-check everything before submitting. You can always edit later.</p>
                 <div className="space-y-3 text-sm">
                   {[
-                    ["Name", form.full_name],
-                    ["Location", `${form.city}, ${form.country}`],
+                    ["Name", computeFullName()],
+                    ["Location", `${form.city}, ${form.country === "Other" ? form.other_country : form.country}`],
+                    ["Phone", form.phone || "—"],
                     ["Roles", form.roles_applied.join(", ")],
-                    ["Experience", `${form.years_experience} · ${form.seniority_level}`],
+                    ["Experience", form.years_experience || "—"],
                     ["Rate", form.expected_rate_usd ? `$${form.expected_rate_usd}/mo` : "—"],
                     ["Skills", form.technical_skills.join(", ") || "—"],
                     ["English", form.english_proficiency || "—"],
+                    ["US Hours", form.us_hours_available || "—"],
                     ["Resume", form.resume_url ? "✓ Uploaded" : "Not uploaded"],
                     ["Loom", form.loom_video_url ? "✓ Provided" : "Not provided"],
+                    ["Certifications", certifications.length > 0 ? `${certifications.length} uploaded` : "None"],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between py-2 border-b border-border">
                       <span className="text-muted-foreground">{label}</span>
@@ -540,8 +706,7 @@ const CandidateProfileEdit = () => {
             </div>
           </div>
 
-          {/* Auto-save indicator */}
-          {step > 1 && step < 5 && (
+          {step > 1 && step < TOTAL_STEPS && (
             <p className="text-center text-[10px] text-muted-foreground mt-3 font-mono">Progress auto-saved as draft</p>
           )}
         </div>

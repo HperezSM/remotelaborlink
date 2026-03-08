@@ -4,23 +4,50 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PageLayout from "@/components/PageLayout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink, FileText } from "lucide-react";
+import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink, FileText, Github, Eye } from "lucide-react";
 
 const CandidateProfile = () => {
   const { id } = useParams<{ id: string }>();
-  const { role } = useAuth();
+  const { user, role } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [portfolioLinks, setPortfolioLinks] = useState<any[]>([]);
+  const [certifications, setCertifications] = useState<any[]>([]);
+  const [profileViews, setProfileViews] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
-    const fetch = async () => {
-      const { data } = await supabase.from("candidate_profiles").select("*").eq("id", id).single();
-      setProfile(data);
+    const fetchAll = async () => {
+      const [profileRes, linksRes, certsRes] = await Promise.all([
+        supabase.from("candidate_profiles").select("*").eq("id", id).single(),
+        supabase.from("candidate_portfolio_links").select("*").eq("candidate_id", id),
+        supabase.from("candidate_certifications").select("*").eq("candidate_id", id),
+      ]);
+      setProfile(profileRes.data);
+      setPortfolioLinks(linksRes.data || []);
+      setCertifications(certsRes.data || []);
+
+      // Log profile view for companies
+      if (user && role === "company") {
+        const { data: company } = await supabase.from("companies").select("id").eq("user_id", user.id).single();
+        if (company) {
+          await supabase.from("profile_views").insert({
+            candidate_id: id,
+            company_id: company.id,
+          });
+        }
+      }
+
+      // Fetch profile views for candidate
+      if (user && role === "candidate") {
+        const { data: views } = await supabase.from("profile_views").select("viewed_at").eq("candidate_id", id);
+        setProfileViews(views || []);
+      }
+
       setLoading(false);
     };
-    fetch();
-  }, [id]);
+    fetchAll();
+  }, [id, user, role]);
 
   if (loading) {
     return (
@@ -54,6 +81,14 @@ const CandidateProfile = () => {
     if (profile.availability === "2 weeks") return "status-screening";
     return "status-pending";
   };
+
+  const allLinks = [
+    profile.linkedin_url && { type: "linkedin", url: profile.linkedin_url, label: "LinkedIn" },
+    (profile as any).github_url && { type: "github", url: (profile as any).github_url, label: "GitHub" },
+    profile.portfolio_url && { type: "portfolio", url: profile.portfolio_url, label: "Portfolio" },
+    profile.portfolio_link && { type: "other", url: profile.portfolio_link, label: "Projects" },
+    ...portfolioLinks.map((l: any) => ({ type: l.link_type, url: l.url, label: l.label || l.link_type })),
+  ].filter(Boolean);
 
   return (
     <PageLayout>
@@ -95,7 +130,7 @@ const CandidateProfile = () => {
           </div>
         </div>
 
-        {/* Skills */}
+        {/* Skills Strip */}
         {profile.technical_skills?.length > 0 && (
           <div className="mt-6">
             <div className="flex flex-wrap gap-2">
@@ -105,6 +140,19 @@ const CandidateProfile = () => {
                 </span>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Portfolio Row */}
+        {allLinks.length > 0 && (
+          <div className="flex flex-wrap gap-3 mt-6">
+            {allLinks.map((link: any, i: number) => (
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                className="card-surface px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                {link.type === "github" ? <Github size={14} /> : <Globe size={14} />}
+                {link.label}
+              </a>
+            ))}
           </div>
         )}
 
@@ -131,6 +179,8 @@ const CandidateProfile = () => {
             { label: "Industries", value: (profile.industries || []).join(", ") },
             { label: "Work Type", value: profile.work_type_preference },
             { label: "English", value: profile.english_proficiency },
+            { label: "US Hours", value: (profile as any).us_hours_available },
+            { label: "Field of Study", value: (profile as any).field_of_study },
           ].filter(d => d.value).map((d) => (
             <div key={d.label} className="card-surface p-4">
               <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">{d.label}</div>
@@ -138,6 +188,34 @@ const CandidateProfile = () => {
             </div>
           ))}
         </div>
+
+        {/* Certifications */}
+        {certifications.length > 0 && (isAdmin || role === "company") && (
+          <div className="card-surface p-8 mt-6">
+            <h2 className="font-display text-xl mb-4">CERTIFICATIONS & CREDENTIALS</h2>
+            <div className="space-y-3">
+              {certifications.map((cert: any) => (
+                <div key={cert.id} className="flex items-center gap-3 card-surface p-4 border border-border">
+                  <div className="file-card-icon w-10 h-10">
+                    <FileText size={16} />
+                  </div>
+                  <span className="text-sm flex-1 truncate">{cert.file_name}</span>
+                  {isAdmin && (
+                    <button
+                      onClick={async () => {
+                        const { data } = await supabase.storage.from("certifications").createSignedUrl(cert.file_url, 60);
+                        if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                      }}
+                      className="text-xs text-primary font-bold hover:underline border border-primary/30 rounded px-3 py-1.5"
+                    >
+                      Download
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Loom Video */}
         {profile.loom_video_url && (
@@ -154,25 +232,6 @@ const CandidateProfile = () => {
             )}
           </div>
         )}
-
-        {/* Links */}
-        <div className="flex flex-wrap gap-4 mt-6">
-          {profile.linkedin_url && (
-            <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="card-surface px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-              <Globe size={14} /> LinkedIn
-            </a>
-          )}
-          {profile.portfolio_url && (
-            <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="card-surface px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-              <Globe size={14} /> Portfolio
-            </a>
-          )}
-          {profile.portfolio_link && (
-            <a href={profile.portfolio_link} target="_blank" rel="noopener noreferrer" className="card-surface px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-              <Globe size={14} /> GitHub / Behance
-            </a>
-          )}
-        </div>
 
         {/* Admin-only: Resume download */}
         {isAdmin && profile.resume_url && (
@@ -195,12 +254,22 @@ const CandidateProfile = () => {
             </button>
           </div>
         )}
-        {isAdmin && !profile.resume_url && (
-          <div className="file-card mt-6">
-            <div className="file-card-icon opacity-40">
-              <FileText size={20} />
+
+        {/* Profile Views (visible to candidate) */}
+        {role === "candidate" && profileViews.length > 0 && (
+          <div className="card-surface p-8 mt-6">
+            <h2 className="font-display text-xl mb-4 flex items-center gap-2">
+              <Eye size={18} /> PROFILE VIEWS
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">{profileViews.length} view{profileViews.length !== 1 ? "s" : ""} this period</p>
+            <div className="space-y-2">
+              {profileViews.slice(0, 10).map((v: any, i: number) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground py-1 border-b border-border">
+                  <Eye size={12} />
+                  Viewed on {new Date(v.viewed_at).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" })} at {new Date(v.viewed_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </div>
+              ))}
             </div>
-            <p className="text-sm text-muted-foreground">Resume not uploaded yet</p>
           </div>
         )}
       </div>

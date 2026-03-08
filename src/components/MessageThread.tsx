@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Send, Search } from "lucide-react";
+import { Send, Search, Lock } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -13,6 +13,28 @@ interface MessageThreadProps {
   recipientName: string;
 }
 
+// Messaging rules:
+// candidate -> admin: allowed
+// candidate -> company: NEVER
+// candidate -> candidate: NEVER
+// admin -> anyone: allowed
+// company(free) -> admin: allowed
+// company(free) -> candidate: BLOCKED (no subscription system yet, so block for now)
+function canSendMessage(senderRole: AppRole | null, recipientRole: AppRole): { allowed: boolean; reason?: string } {
+  if (!senderRole) return { allowed: false, reason: "Not authenticated" };
+  if (senderRole === "admin") return { allowed: true };
+  if (senderRole === "candidate") {
+    if (recipientRole === "admin") return { allowed: true };
+    return { allowed: false, reason: "Candidates can only message the admin team." };
+  }
+  if (senderRole === "company") {
+    if (recipientRole === "admin") return { allowed: true };
+    // For now, block company->candidate messaging (will unlock with subscriptions)
+    return { allowed: false, reason: "Upgrade your plan to message candidates directly." };
+  }
+  return { allowed: false };
+}
+
 const MessageThread = ({ threadId, recipientId, recipientRole, recipientName }: MessageThreadProps) => {
   const { user, role } = useAuth();
   const [messages, setMessages] = useState<any[]>([]);
@@ -21,6 +43,8 @@ const MessageThread = ({ threadId, recipientId, recipientRole, recipientName }: 
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const permission = canSendMessage(role as AppRole | null, recipientRole);
 
   const fetchMessages = async () => {
     const { data } = await supabase
@@ -54,7 +78,7 @@ const MessageThread = ({ threadId, recipientId, recipientRole, recipientName }: 
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!newMsg.trim() || !user || !role) return;
+    if (!newMsg.trim() || !user || !role || !permission.allowed) return;
     setSending(true);
     await supabase.from("messages").insert({
       thread_id: threadId,
@@ -154,23 +178,30 @@ const MessageThread = ({ threadId, recipientId, recipientRole, recipientName }: 
 
       {/* Input */}
       <div className="p-4 border-t border-border">
-        <div className="flex gap-2">
-          <textarea
-            value={newMsg}
-            onChange={e => setNewMsg(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            rows={1}
-            className="flex-1 bg-background border border-border rounded px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={sending || !newMsg.trim()}
-            className="px-3 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-40 transition-opacity"
-          >
-            <Send size={16} />
-          </button>
-        </div>
+        {permission.allowed ? (
+          <div className="flex gap-2">
+            <textarea
+              value={newMsg}
+              onChange={e => setNewMsg(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              rows={1}
+              className="flex-1 bg-background border border-border rounded px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={sending || !newMsg.trim()}
+              className="px-3 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-40 transition-opacity"
+            >
+              <Send size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 rounded-lg px-4 py-3">
+            <Lock size={16} />
+            <span>{permission.reason}</span>
+          </div>
+        )}
       </div>
     </div>
   );
