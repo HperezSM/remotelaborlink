@@ -20,45 +20,6 @@ const coreValues = [
   { name: "Culture-Driven, Remote Work.", desc: "It's about the momentum of collaboration, and building global teams that value time, culture, and talent." },
 ];
 
-const teamMembers = [
-  {
-    name: "Herber",
-    role: "CEO & Head of Operations",
-    initials: "H",
-    bullets: [
-      "Leads complex IT and product initiatives across distributed teams",
-      "Brings clarity and execution structure when things get messy",
-      "Assesses technical talent with a real startup and enterprise lens",
-      "9+ years across healthcare tech, SaaS, cybersecurity, and IT infrastructure",
-    ],
-    quote: "Good systems make good teams possible.",
-  },
-  {
-    name: "Karlis",
-    role: "Co-Founder & Head of Marketing",
-    initials: "K",
-    bullets: [
-      "Leads marketing and growth across multiple industries",
-      "Keeps teams aligned, supported, and accountable",
-      "Bridges the gap between founders and talent to build long-term partnerships",
-      "Specializes in positioning and brand strategy for remote-first companies",
-    ],
-    quote: "Remote work only works when people feel seen and supported.",
-  },
-  {
-    name: "Karla",
-    role: "Co-Founder & Head of Talent",
-    initials: "KA",
-    bullets: [
-      "Psychology background combined with premium recruiting expertise",
-      "Hands-on throughout every hiring process — asks the right questions",
-      "Helps founders avoid costly hiring mistakes before they happen",
-      "Designs the vetting framework that separates real talent from resume noise",
-    ],
-    quote: "The right team starts with the right people.",
-  },
-];
-
 const latamRows = [
   { label: "Time Zone", value: "1–4 hours from US (real-time collaboration)" },
   { label: "Cultural Fit", value: "Western business culture, similar work expectations" },
