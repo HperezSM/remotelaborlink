@@ -342,7 +342,7 @@ const CompanyDashboard = () => {
                           {p.company_action === "none" && (
                             <>
                               <button onClick={() => updatePushAction(p.id, "shortlisted")} className="text-xs text-primary font-bold hover:underline ml-3">Shortlist</button>
-                              <button onClick={() => updatePushAction(p.id, "interview_requested")} className="text-xs text-primary font-bold hover:underline">Request Interview</button>
+                              <button onClick={() => setScheduleModal({ pushId: p.id, candidateId: cand.id, candidateName: cand.full_name })} className="text-xs text-primary font-bold hover:underline">Schedule Interview</button>
                             </>
                           )}
                           {p.company_action !== "none" && (
