@@ -14,6 +14,7 @@ const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
   { label: "Role Requests", icon: FileText, id: "roles" },
   { label: "Talent Pool", icon: Users, id: "talent" },
+  { label: "Compare", icon: Users, id: "compare" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
   { label: "Settings", icon: Settings, id: "settings" },
 ];
@@ -320,6 +321,62 @@ const CompanyDashboard = () => {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Compare */}
+          {activeTab === "compare" && (
+            <div>
+              {pushedCandidates.length < 2 ? (
+                <div className="card-surface p-12 text-center">
+                  <h3 className="font-display text-xl mb-2">NOT ENOUGH CANDIDATES</h3>
+                  <p className="text-sm text-muted-foreground">You need at least 2 candidates in your talent pool to compare.</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-6">Side-by-side comparison of shortlisted candidates.</p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-3 px-3 font-mono text-[10px] text-muted-foreground uppercase tracking-wider w-32">Attribute</th>
+                          {pushedCandidates.slice(0, 4).map(c => (
+                            <th key={c.id} className="text-left py-3 px-3">
+                              <div className="flex items-center gap-2">
+                                {c.profile_photo_url ? (
+                                  <img src={c.profile_photo_url} alt="" className="avatar-sm" />
+                                ) : (
+                                  <div className="avatar-initials-sm">{c.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}</div>
+                                )}
+                                <span className="font-bold text-foreground">{c.full_name}</span>
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { label: "Role", fn: (c: any) => (c.roles_applied || []).join(", ") },
+                          { label: "Seniority", fn: (c: any) => c.seniority_level || "—" },
+                          { label: "Experience", fn: (c: any) => c.years_experience || "—" },
+                          { label: "Country", fn: (c: any) => c.country },
+                          { label: "Rate", fn: (c: any) => c.expected_rate_usd ? `$${c.expected_rate_usd}/mo` : "—" },
+                          { label: "English", fn: (c: any) => c.english_proficiency || "—" },
+                          { label: "Availability", fn: (c: any) => c.availability || "—" },
+                          { label: "Skills", fn: (c: any) => (c.technical_skills || []).slice(0, 5).join(", ") || "—" },
+                        ].map(row => (
+                          <tr key={row.label} className="border-b border-border">
+                            <td className="py-3 px-3 font-mono text-[10px] text-muted-foreground uppercase tracking-wider">{row.label}</td>
+                            {pushedCandidates.slice(0, 4).map(c => (
+                              <td key={c.id} className="py-3 px-3 text-foreground/80">{row.fn(c)}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>

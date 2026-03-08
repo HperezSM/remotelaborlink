@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
 import { signOut } from "@/lib/auth";
-import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import { Users, Building2, FileText, GitMerge, MessageSquare, Settings, LayoutDashboard, LogOut, BarChart3 } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
+import AnalyticsTab from "@/components/admin/AnalyticsTab";
 
 const sidebarItems = [
   { label: "Overview", icon: LayoutDashboard, id: "overview" },
+  { label: "Analytics", icon: BarChart3, id: "analytics" },
   { label: "Candidates", icon: Users, id: "candidates" },
   { label: "Companies", icon: Building2, id: "companies" },
   { label: "Role Requests", icon: FileText, id: "roles" },
@@ -182,6 +184,11 @@ const AdminDashboard = () => {
                 <Button onClick={() => setActiveTab("companies")} variant="outline" size="sm">Approve Companies</Button>
               </div>
             </div>
+          )}
+
+          {/* Analytics */}
+          {activeTab === "analytics" && (
+            <AnalyticsTab candidates={candidates} companies={companies} roleRequests={roleRequests} pushes={pushes} />
           )}
 
           {/* Candidates */}
