@@ -176,16 +176,31 @@ const CandidateProfile = () => {
 
         {/* Admin-only: Resume download */}
         {isAdmin && profile.resume_url && (
-          <div className="mt-6">
+          <div className="file-card mt-6">
+            <div className="file-card-icon">
+              <FileText size={20} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-foreground">Resume</p>
+              <p className="text-[11px] font-mono text-muted-foreground">PDF · Admin only</p>
+            </div>
             <button
               onClick={async () => {
                 const { data } = await supabase.storage.from("resumes").createSignedUrl(profile.resume_url, 60);
                 if (data?.signedUrl) window.open(data.signedUrl, "_blank");
               }}
-              className="text-sm text-primary font-bold hover:underline"
+              className="text-xs text-primary font-bold hover:underline border border-primary/30 rounded px-3 py-1.5"
             >
-              📄 Download Resume (Admin only)
+              Download
             </button>
+          </div>
+        )}
+        {isAdmin && !profile.resume_url && (
+          <div className="file-card mt-6">
+            <div className="file-card-icon opacity-40">
+              <FileText size={20} />
+            </div>
+            <p className="text-sm text-muted-foreground">Resume not uploaded yet</p>
           </div>
         )}
       </div>
