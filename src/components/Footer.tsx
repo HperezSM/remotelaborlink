@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logoFull from "@/assets/logo-full.png";
 import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t border-border bg-background">
@@ -33,9 +33,6 @@ const Footer = () => (
           <div className="space-y-2 text-sm text-muted-foreground">
             <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
               <Mail size={14} /> {contactInfo.email}
-            </a>
-            <a href={`tel:${contactInfo.phone.replace(/-/g, "")}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
-              <Phone size={14} /> {contactInfo.phone}
             </a>
             <Link to="/login/company" className="block hover:text-foreground transition-colors mt-3">Client Portal</Link>
             <Link to="/signup/talent" className="block hover:text-foreground transition-colors">Apply as Talent</Link>
