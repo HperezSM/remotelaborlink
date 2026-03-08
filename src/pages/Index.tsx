@@ -1,8 +1,10 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Check, ArrowRight, Zap, Clock, Shield, Star } from "lucide-react";
+import { Check, ArrowRight, Zap, Clock, Shield, FileText, Code, Palette, Headphones, Settings } from "lucide-react";
 import { motion } from "framer-motion";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import PartnersCarousel from "@/components/PartnersCarousel";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
