@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logoIcon from "@/assets/logo-icon.png";
 import { SocialIconRow } from "@/components/SocialLinks";
+import { supabase } from "@/integrations/supabase/client";
 
-const navLinks = [
+const baseNavLinks = [
   { label: "Home", to: "/" },
   { label: "For Companies", to: "/for-companies" },
   { label: "For Talent", to: "/for-talent" },
