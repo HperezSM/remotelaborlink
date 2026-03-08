@@ -21,6 +21,7 @@ const sidebarItems = [
   { label: "Candidates", icon: Users, id: "candidates" },
   { label: "Companies", icon: Building2, id: "companies" },
   { label: "Role Requests", icon: FileText, id: "roles" },
+  { label: "Jobs", icon: Briefcase, id: "jobs" },
   { label: "Matches", icon: GitMerge, id: "matches" },
   { label: "Messages", icon: MessageSquare, id: "messages" },
   { label: "Content", icon: Palette, id: "content" },
