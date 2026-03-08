@@ -46,12 +46,12 @@ const portalCandidates = [
 ];
 
 const roles = [
-  { emoji: "📊", name: "Project Managers", desc: "Experienced PMs who keep distributed teams aligned and shipping on time." },
-  { emoji: "🔄", name: "Scrum Masters", desc: "Certified professionals who drive agile processes and remove blockers." },
-  { emoji: "💻", name: "Developers", desc: "Full-stack, frontend, backend, and mobile engineers across modern stacks." },
-  { emoji: "🎨", name: "UX/UI Designers", desc: "Product designers who craft user-centered experiences that convert." },
-  { emoji: "🎧", name: "Customer Support", desc: "Bilingual support specialists who deliver exceptional client experiences." },
-  { emoji: "⚙️", name: "Operations", desc: "Ops professionals who streamline workflows and scale processes." },
+  { icon: FileText, name: "Project Managers", desc: "Experienced PMs who keep distributed teams aligned and shipping on time." },
+  { icon: Settings, name: "Scrum Masters", desc: "Certified professionals who drive agile processes and remove blockers." },
+  { icon: Code, name: "Developers", desc: "Full-stack, frontend, backend, and mobile engineers across modern stacks." },
+  { icon: Palette, name: "UX/UI Designers", desc: "Product designers who craft user-centered experiences that convert." },
+  { icon: Headphones, name: "Customer Support", desc: "Bilingual support specialists who deliver exceptional client experiences." },
+  { icon: Settings, name: "Operations", desc: "Ops professionals who streamline workflows and scale processes." },
 ];
 
 const howItWorks = [
