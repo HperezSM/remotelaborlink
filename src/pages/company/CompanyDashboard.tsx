@@ -166,6 +166,7 @@ const CompanyDashboard = () => {
       <main className="flex-1 overflow-auto">
         <header className="border-b border-border px-8 py-4 flex items-center justify-between">
           <h1 className="font-display text-2xl">{sidebarItems.find(s => s.id === activeTab)?.label?.toUpperCase()}</h1>
+          <NotificationBell />
         </header>
 
         <div className="p-8">

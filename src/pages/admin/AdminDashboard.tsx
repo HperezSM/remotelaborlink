@@ -151,7 +151,10 @@ const AdminDashboard = () => {
       <main className="flex-1 overflow-auto">
         <header className="border-b border-border px-8 py-4 flex items-center justify-between">
           <h1 className="font-display text-2xl">{sidebarItems.find(s => s.id === activeTab)?.label?.toUpperCase()}</h1>
-          <span className="text-xs font-mono text-muted-foreground">{user?.email}</span>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <span className="text-xs font-mono text-muted-foreground">{user?.email}</span>
+          </div>
         </header>
 
         <div className="p-8">
