@@ -88,11 +88,12 @@ const ForCompanies = () => (
       <div className="container mx-auto px-4">
         <span className="section-tag">Our Solution</span>
         <h2 className="font-display text-5xl md:text-6xl mb-16">5-STEP VETTING FRAMEWORK</h2>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-4 relative">
           <div className="hidden md:block absolute top-6 left-0 right-0 h-px bg-border" />
+          <div className="md:hidden absolute left-6 top-6 bottom-6 w-px bg-border" />
           {vettingSteps.map((step, i) => (
-            <motion.div key={step} variants={fadeUp} className="flex flex-col items-center text-center relative z-10 flex-1">
-              <div className="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center font-display text-lg text-primary bg-background mb-3 hover:bg-primary hover:text-primary-foreground transition-colors">
+            <motion.div key={step} variants={fadeUp} className="flex flex-row md:flex-col items-center md:text-center relative z-10 md:flex-1 gap-4 md:gap-0">
+              <div className="w-12 h-12 shrink-0 rounded-full border-2 border-primary flex items-center justify-center font-display text-lg text-primary bg-background md:mb-3 hover:bg-primary hover:text-primary-foreground transition-colors">
                 {i + 1}
               </div>
               <span className="text-sm font-bold">{step}</span>
