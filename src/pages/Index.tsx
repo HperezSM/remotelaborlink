@@ -32,10 +32,10 @@ const whyLatam = [
 const vettingSteps = ["Application Screen", "Technical Assessment", "Live Interview", "Reference Check", "Portal Upload"];
 
 const portalFeatures = [
-  { icon: "📋", label: "Pre-vetted candidate profiles with skill summaries" },
-  { icon: "📥", label: "Downloadable CVs and work samples" },
-  { icon: "⭐", label: "Shortlist and compare candidates side-by-side" },
-  { icon: "📅", label: "Request interviews directly through the portal" },
+  { icon: FileText, label: "Pre-vetted candidate profiles with skill summaries" },
+  { icon: Check, label: "Downloadable CVs and work samples" },
+  { icon: Shield, label: "Shortlist and compare candidates side-by-side" },
+  { icon: Clock, label: "Request interviews directly through the portal" },
 ];
 
 const portalCandidates = [
