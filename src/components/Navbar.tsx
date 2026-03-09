@@ -71,6 +71,9 @@ const Navbar = () => {
             <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Link to="/signup/company">Hire Talent</Link>
             </Button>
+            <Button asChild variant="outline" size="sm" className="border-border text-foreground hover:border-primary hover:text-primary text-[13px] font-semibold">
+              <Link to="/login/talent">Talent Login</Link>
+            </Button>
             <Button asChild size="default" className="bg-primary text-primary-foreground font-bold rounded hover:opacity-90">
               <Link to="/login/company">Client Portal</Link>
             </Button>
