@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import { isLockedOut, recordFailedAttempt, resetAttempts, formatLockoutTime } from "@/lib/loginLockout";
+import GoogleSSOButton from "@/components/GoogleSSOButton";
 
 const CompanyLogin = () => {
   const [email, setEmail] = useState("");
