@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import { isLockedOut, recordFailedAttempt, resetAttempts, formatLockoutTime } from "@/lib/loginLockout";
 import GoogleSSOButton from "@/components/GoogleSSOButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const CandidateLogin = () => {
   const [email, setEmail] = useState("");
@@ -14,18 +15,22 @@ const CandidateLogin = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [lockoutRemaining, setLockoutRemaining] = useState(0);
   const navigate = useNavigate();
+  const { user, role } = useAuth();
 
-  // Countdown timer for lockout
+  // If already logged in, redirect
+  useEffect(() => {
+    if (user && role === "candidate") navigate("/talent/dashboard", { replace: true });
+    else if (user && role === "company") navigate("/company/dashboard", { replace: true });
+    else if (user && role === "admin") navigate("/admin", { replace: true });
+  }, [user, role, navigate]);
+
   useEffect(() => {
     if (lockoutRemaining <= 0) return;
     const t = setInterval(() => {
       if (email) {
         const { locked, remainingMs } = isLockedOut(email);
-        if (!locked) {
-          setLockoutRemaining(0);
-        } else {
-          setLockoutRemaining(remainingMs);
-        }
+        if (!locked) setLockoutRemaining(0);
+        else setLockoutRemaining(remainingMs);
       }
     }, 1000);
     return () => clearInterval(t);
@@ -33,38 +38,22 @@ const CandidateLogin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Check lockout
     const lockout = isLockedOut(email);
     if (lockout.locked) {
       setLockoutRemaining(lockout.remainingMs);
-      toast({
-        title: "Account temporarily locked",
-        description: `Try again in ${formatLockoutTime(lockout.remainingMs)}.`,
-        variant: "destructive",
-      });
+      toast({ title: "Account temporarily locked", description: `Try again in ${formatLockoutTime(lockout.remainingMs)}.`, variant: "destructive" });
       return;
     }
-
     setLoading(true);
     const { error } = await signIn(email, password);
     setLoading(false);
-
     if (error) {
       const result = recordFailedAttempt(email);
       if (result.locked) {
         setLockoutRemaining(result.remainingMs);
-        toast({
-          title: "Too many failed attempts",
-          description: "Try again in 15 minutes or reset your password.",
-          variant: "destructive",
-        });
+        toast({ title: "Too many failed attempts", description: "Try again in 15 minutes or reset your password.", variant: "destructive" });
       } else {
-        toast({
-          title: "Login failed",
-          description: `Incorrect email or password. ${result.attemptsRemaining} attempt${result.attemptsRemaining === 1 ? "" : "s"} remaining.`,
-          variant: "destructive",
-        });
+        toast({ title: "Login failed", description: `Incorrect email or password. ${result.attemptsRemaining} attempt${result.attemptsRemaining === 1 ? "" : "s"} remaining.`, variant: "destructive" });
       }
     } else {
       resetAttempts(email);
@@ -112,13 +101,8 @@ const CandidateLogin = () => {
             </div>
             <GoogleSSOButton label="Sign in with Google" />
             <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
-              <p>
-                <Link to="/auth/forgot-password" className="text-primary hover:underline">Forgot your password?</Link>
-              </p>
-              <p>
-                Don't have an account?{" "}
-                <Link to="/signup/talent" className="text-primary hover:underline">Apply as Talent</Link>
-              </p>
+              <p><Link to="/auth/forgot-password" className="text-primary hover:underline">Forgot your password?</Link></p>
+              <p>Don't have an account?{" "}<Link to="/signup/talent" className="text-primary hover:underline">Apply as Talent</Link></p>
             </div>
           </div>
         </div>
