@@ -30,6 +30,14 @@ const process = [
 
 const ForTalent = () => (
   <PageLayout>
+    {/* Login banner */}
+    <div className="bg-card border-b border-border px-[5%] py-3 flex items-center justify-between">
+      <span className="text-sm text-muted-foreground">Already applied? Log in to manage your profile.</span>
+      <Button asChild size="sm" className="bg-primary text-primary-foreground font-bold text-xs px-4">
+        <Link to="/login/talent">Log In</Link>
+      </Button>
+    </div>
+
     {/* Hero */}
     <section className="py-24 md:py-36 relative overflow-hidden">
       <div className="absolute inset-0 glow-bg opacity-30" />

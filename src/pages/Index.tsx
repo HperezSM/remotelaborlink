@@ -85,6 +85,12 @@ const Index = () => {
                   <a href="#how-it-works">How It Works</a>
                 </Button>
               </motion.div>
+              <motion.p variants={fadeUp} className="mt-4 text-[13px] text-muted-foreground">
+                Already a member?{" "}
+                <Link to="/login/talent" className="text-primary hover:underline font-medium">
+                  Log in to your profile →
+                </Link>
+              </motion.p>
             </motion.div>
             <motion.div
               initial="hidden" animate="visible" variants={stagger}
