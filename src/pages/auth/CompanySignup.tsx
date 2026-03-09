@@ -5,6 +5,7 @@ import { signUpCompany, isFreeEmailDomain } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import PasswordRequirements, { isPasswordValid } from "@/components/PasswordRequirements";
+import GoogleSSOButton from "@/components/GoogleSSOButton";
 
 const companySizes = ["1–10", "11–50", "51–200", "201–500", "500+"];
 const industries = ["SaaS", "Fintech", "Healthtech", "E-commerce", "Agency", "Hospitality Tech", "Cybersecurity", "Other"];
