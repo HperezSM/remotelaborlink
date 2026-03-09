@@ -7,8 +7,9 @@ interface PasswordRequirementsProps {
 export const passwordRules = [
   { label: "Minimum 8 characters", test: (p: string) => p.length >= 8 },
   { label: "At least one uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "At least one lowercase letter", test: (p: string) => /[a-z]/.test(p) },
   { label: "At least one number", test: (p: string) => /\d/.test(p) },
-  { label: "At least one special character", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+  { label: "At least one special character (!@#$%^&*)", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
 ];
 
 export function isPasswordValid(password: string) {
@@ -27,9 +28,9 @@ const PasswordRequirements = ({ password }: PasswordRequirementsProps) => {
             {passed ? (
               <Check className="h-3 w-3 text-green-500" />
             ) : (
-              <X className="h-3 w-3 text-muted-foreground" />
+              <X className="h-3 w-3 text-destructive" />
             )}
-            <span className={passed ? "text-green-500" : "text-muted-foreground"}>
+            <span className={passed ? "text-green-500" : "text-destructive"}>
               {rule.label}
             </span>
           </div>

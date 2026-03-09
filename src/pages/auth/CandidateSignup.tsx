@@ -37,7 +37,8 @@ const CandidateSignup = () => {
     if (error) {
       toast({ title: "Signup failed", description: (error as any).message, variant: "destructive" });
     } else {
-      navigate("/auth/check-email", { state: { email } });
+      // No email verification — go straight to profile edit
+      navigate("/talent/profile/edit");
     }
   };
 
@@ -90,7 +91,7 @@ const CandidateSignup = () => {
               </div>
               <Button
                 type="submit"
-                disabled={loading || !ageConfirmed || !termsAccepted}
+                disabled={loading || !ageConfirmed || !termsAccepted || !isPasswordValid(password)}
                 className="w-full bg-primary text-primary-foreground font-bold py-3.5 hover:opacity-90"
               >
                 {loading ? "Creating account..." : "Create My Account"}

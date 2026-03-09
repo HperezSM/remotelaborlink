@@ -54,7 +54,8 @@ const CompanySignup = () => {
     if (error) {
       toast({ title: "Signup failed", description: (error as any).message, variant: "destructive" });
     } else {
-      navigate("/auth/check-email", { state: { email: form.email } });
+      // No email verification — go to company pending page
+      navigate("/auth/company-pending");
     }
   };
 
@@ -137,7 +138,7 @@ const CompanySignup = () => {
               </div>
               <Button
                 type="submit"
-                disabled={loading || !!emailError || !termsAccepted || !authorizedConfirmed}
+                disabled={loading || !!emailError || !termsAccepted || !authorizedConfirmed || !isPasswordValid(form.password)}
                 className="w-full bg-primary text-primary-foreground font-bold py-3.5 hover:opacity-90"
               >
                 {loading ? "Creating account..." : "Create Company Account"}
