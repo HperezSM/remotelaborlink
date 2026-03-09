@@ -1,11 +1,20 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Calendar, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", company: "", email: "", type: "", message: "" });
+
+  useEffect(() => {
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://assets.calendly.com/assets/external/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,11 +71,12 @@ const Contact = () => {
 
             {/* Right side: Calendly + Contact info */}
             <div className="flex flex-col gap-8">
-              <div className="card-surface border-dashed border-2 rounded-lg p-16 w-full flex flex-col items-center justify-center text-center min-h-[300px]">
-                <Calendar className="text-primary mb-4" size={48} />
-                <h3 className="font-display text-2xl mb-2">BOOK A CALL</h3>
-                <p className="text-sm text-muted-foreground mb-4">Schedule a 30-minute talent strategy session.</p>
-                <p className="text-xs font-mono text-muted-foreground">Calendly embed placeholder</p>
+              <div className="card-surface rounded-lg overflow-hidden w-full">
+                <div
+                  className="calendly-inline-widget"
+                  data-url="https://calendly.com/team-remotelaborlink/30min"
+                  style={{ minWidth: "320px", height: "700px" }}
+                />
               </div>
 
               {/* Contact details & social */}
