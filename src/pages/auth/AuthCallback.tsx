@@ -9,7 +9,6 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const handleCallback = async () => {
-      // Supabase auto-processes tokens from the URL hash
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
@@ -17,7 +16,7 @@ const AuthCallback = () => {
         return;
       }
 
-      // Determine role and redirect
+      // Determine role and redirect to dashboard
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
@@ -27,9 +26,22 @@ const AuthCallback = () => {
       const role = roleData?.role;
 
       if (role === "company") {
-        navigate("/auth/company-verified", { replace: true });
+        // Check company status
+        const { data: companyData } = await supabase
+          .from("companies")
+          .select("status")
+          .eq("user_id", session.user.id)
+          .single();
+        
+        if (companyData?.status === "pending") {
+          navigate("/auth/company-pending", { replace: true });
+        } else {
+          navigate("/company/dashboard", { replace: true });
+        }
       } else if (role === "candidate") {
-        navigate("/auth/verified", { replace: true });
+        navigate("/talent/dashboard", { replace: true });
+      } else if (role === "admin") {
+        navigate("/admin", { replace: true });
       } else {
         navigate("/", { replace: true });
       }
@@ -46,7 +58,7 @@ const AuthCallback = () => {
             <p className="text-destructive">{error}</p>
           ) : (
             <p className="text-muted-foreground font-mono text-sm animate-pulse">
-              Verifying your email...
+              Signing you in...
             </p>
           )}
         </div>

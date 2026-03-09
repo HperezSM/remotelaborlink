@@ -38,8 +38,8 @@ const CandidateSignup = () => {
     if (error) {
       toast({ title: "Signup failed", description: (error as any).message, variant: "destructive" });
     } else {
-      // No email verification — go straight to profile edit
-      navigate("/talent/profile/edit");
+      // Go to dashboard — profile completion is encouraged but not forced
+      navigate("/talent/dashboard");
     }
   };
 

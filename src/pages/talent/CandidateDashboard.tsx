@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import PageLayout from "@/components/PageLayout";
@@ -10,20 +10,22 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import {
   Eye, User, Pencil, Wrench, FileText, Link2, Image, Activity,
-  MessageCircle, Bell, ChevronRight, Upload, X, Trash2, ExternalLink, XCircle, Download
+  MessageCircle, ChevronRight, Upload, X, Trash2, Download, XCircle, AlertTriangle, Briefcase, Award
 } from "lucide-react";
 
 type Tab = "overview" | "skills" | "certifications" | "portfolio" | "photos" | "applications" | "views" | "messages" | "notifications";
 
 const CandidateDashboard = () => {
-  const { user } = useAuth();
+  const { user, profile: authProfile } = useAuth();
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [activeTab, setActiveTab] = useState<Tab>((searchParams.get("tab") as Tab) || "overview");
   const [profileViews, setProfileViews] = useState<any[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [certifications, setCertifications] = useState<any[]>([]);
   const [portfolioLinks, setPortfolioLinks] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   // Skills editing
   const [editSkills, setEditSkills] = useState<string[]>([]);
@@ -35,6 +37,11 @@ const CandidateDashboard = () => {
   // Portfolio editing
   const [linkForms, setLinkForms] = useState({ linkedin_url: "", github_url: "", portfolio_url: "", portfolio_link: "" });
   const [extraLinks, setExtraLinks] = useState<{ label: string; url: string }[]>([]);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab") as Tab;
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!user) return;
@@ -97,6 +104,9 @@ const CandidateDashboard = () => {
   const completedCount = completionFields.filter(f => f.check ? f.check(profile?.[f.key]) : !!profile?.[f.key]).length;
   const completionPct = Math.round((completedCount / completionFields.length) * 100);
   const missingFields = completionFields.filter(f => !(f.check ? f.check(profile?.[f.key]) : !!profile?.[f.key]));
+  const isProfileIncomplete = completionPct < 100;
+
+  const firstName = profile?.first_name || profile?.full_name?.split(" ")[0] || "there";
 
   const saveSkills = async () => {
     if (!profile) return;
@@ -118,8 +128,6 @@ const CandidateDashboard = () => {
       portfolio_url: linkForms.portfolio_url || null,
       portfolio_link: linkForms.portfolio_link || null,
     }).eq("id", profile.id);
-
-    // Sync extra links
     await supabase.from("candidate_portfolio_links").delete().eq("candidate_id", profile.id);
     const validLinks = extraLinks.filter(l => l.url.trim());
     if (validLinks.length > 0) {
@@ -192,13 +200,34 @@ const CandidateDashboard = () => {
     <PageLayout>
       <section className="py-8">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex items-center justify-between mb-8">
+          {/* Welcome bar */}
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <span className="section-tag">Dashboard</span>
-              <h1 className="font-display text-4xl md:text-5xl">YOUR DASHBOARD</h1>
+              <h1 className="font-display text-4xl md:text-[36px]">Welcome back, {firstName}.</h1>
+              <p className="text-[15px] text-muted-foreground mt-1">Here's your profile overview.</p>
             </div>
             <NotificationBell />
           </div>
+
+          {/* Profile incomplete banner */}
+          {isProfileIncomplete && !bannerDismissed && (
+            <div className="mb-6 rounded-lg border border-primary p-4 flex items-center justify-between gap-4" style={{ background: '#1a1a1a' }}>
+              <div className="flex items-center gap-3">
+                <AlertTriangle size={18} className="text-primary shrink-0" />
+                <p className="text-sm text-foreground">
+                  Your profile is incomplete. Complete it to get matched with US companies.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button asChild size="sm" className="bg-primary text-primary-foreground font-bold text-xs">
+                  <Link to="/talent/profile/edit">Complete My Profile →</Link>
+                </Button>
+                <button onClick={() => setBannerDismissed(true)} className="text-muted-foreground hover:text-foreground p-1">
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar */}
@@ -286,6 +315,28 @@ const CandidateDashboard = () => {
                     </div>
                   </div>
 
+                  {/* Quick action cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="card-surface p-6 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("skills")}>
+                      <Wrench size={20} className="text-primary mb-3" />
+                      <h3 className="font-display text-lg mb-1">UPDATE SKILLS</h3>
+                      <p className="text-xs text-muted-foreground mb-3">Last updated {profile?.updated_at ? new Date(profile.updated_at).toLocaleDateString() : "never"}</p>
+                      <span className="text-primary text-xs font-bold">Go →</span>
+                    </div>
+                    <div className="card-surface p-6 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("certifications")}>
+                      <Award size={20} className="text-primary mb-3" />
+                      <h3 className="font-display text-lg mb-1">ADD CERT</h3>
+                      <p className="text-xs text-muted-foreground mb-3">{certifications.length} uploaded</p>
+                      <span className="text-primary text-xs font-bold">Go →</span>
+                    </div>
+                    <Link to="/jobs" className="card-surface p-6 hover:border-primary/30 transition-colors block">
+                      <Briefcase size={20} className="text-primary mb-3" />
+                      <h3 className="font-display text-lg mb-1">VIEW JOBS</h3>
+                      <p className="text-xs text-muted-foreground mb-3">Browse open roles</p>
+                      <span className="text-primary text-xs font-bold">Go →</span>
+                    </Link>
+                  </div>
+
                   {/* Status tracker */}
                   <div className="card-surface p-8">
                     <h2 className="font-body font-bold text-sm mb-6 normal-case text-foreground">Application Status</h2>
@@ -299,25 +350,6 @@ const CandidateDashboard = () => {
                           {i < statusSteps.length - 1 && <div className="flex-1 h-px bg-border" />}
                         </div>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Quick actions */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="card-surface p-6 text-center cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("messages")}>
-                      <MessageCircle size={20} className="text-primary mx-auto mb-2" />
-                      <h3 className="font-display text-lg mb-1">MESSAGES</h3>
-                      <span className="text-primary text-xs font-bold">Open →</span>
-                    </div>
-                    <div className="card-surface p-6 text-center cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("views")}>
-                      <Eye size={20} className="text-primary mx-auto mb-2" />
-                      <h3 className="font-display text-lg mb-1">PROFILE VIEWS</h3>
-                      <span className="text-primary text-xs font-bold">{profileViews.length} views →</span>
-                    </div>
-                    <div className="card-surface p-6 text-center cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("applications")}>
-                      <Activity size={20} className="text-primary mx-auto mb-2" />
-                      <h3 className="font-display text-lg mb-1">APPLICATIONS</h3>
-                      <span className="text-primary text-xs font-bold">{applications.length} active →</span>
                     </div>
                   </div>
                 </div>
@@ -348,16 +380,14 @@ const CandidateDashboard = () => {
                   <div className="space-y-4 pt-4 border-t border-border">
                     <div>
                       <label className="text-sm text-muted-foreground block mb-1">English Level</label>
-                      <select value={editEnglish} onChange={e => setEditEnglish(e.target.value)}
-                        className="w-full bg-background border border-border rounded px-3 py-2 text-sm">
+                      <select value={editEnglish} onChange={e => setEditEnglish(e.target.value)} className="w-full bg-background border border-border rounded px-3 py-2 text-sm">
                         <option value="">Select</option>
                         {["Basic", "Conversational", "Fluent", "Native"].map(o => <option key={o} value={o}>{o}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="text-sm text-muted-foreground block mb-1">Work Type</label>
-                      <select value={editWorkType} onChange={e => setEditWorkType(e.target.value)}
-                        className="w-full bg-background border border-border rounded px-3 py-2 text-sm">
+                      <select value={editWorkType} onChange={e => setEditWorkType(e.target.value)} className="w-full bg-background border border-border rounded px-3 py-2 text-sm">
                         <option value="">Select</option>
                         {["Full-time", "Part-time", "Contract", "Any"].map(o => <option key={o} value={o}>{o}</option>)}
                       </select>
@@ -455,8 +485,6 @@ const CandidateDashboard = () => {
               {activeTab === "photos" && (
                 <div className="card-surface p-8 space-y-6">
                   <h2 className="font-display text-xl">PHOTOS</h2>
-
-                  {/* Profile photo */}
                   <div>
                     <label className="text-sm text-muted-foreground block mb-2">Profile Photo</label>
                     <div className="flex items-center gap-4">
@@ -470,8 +498,6 @@ const CandidateDashboard = () => {
                       <Button asChild variant="outline" size="sm"><Link to="/talent/profile/edit">Change Profile Photo</Link></Button>
                     </div>
                   </div>
-
-                  {/* Additional photos */}
                   <div className="border-t border-border pt-4">
                     <label className="text-sm text-muted-foreground block mb-3">Additional Photos (max 3)</label>
                     <div className="grid grid-cols-3 gap-3">
@@ -500,8 +526,6 @@ const CandidateDashboard = () => {
               {activeTab === "applications" && (
                 <div className="space-y-4">
                   <h2 className="font-display text-xl mb-4">YOUR APPLICATIONS</h2>
-
-                  {/* Status tracker */}
                   <div className="card-surface p-8 mb-4">
                     <h3 className="font-body font-bold text-sm mb-6 normal-case text-foreground">Application Progress</h3>
                     <div className="flex items-center gap-2">
@@ -516,7 +540,6 @@ const CandidateDashboard = () => {
                       ))}
                     </div>
                   </div>
-
                   {applications.length === 0 ? (
                     <div className="card-surface p-12 text-center">
                       <Activity size={32} className="mx-auto mb-4 text-muted-foreground" />

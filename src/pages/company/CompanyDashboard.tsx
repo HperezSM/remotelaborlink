@@ -3,10 +3,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { signOut } from "@/lib/auth";
 import logoIcon from "@/assets/logo-icon.png";
-import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut, Calendar } from "lucide-react";
+import { LayoutDashboard, FileText, Users, MessageSquare, Settings, LogOut, Calendar, Briefcase } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import MessagingPanel from "@/components/MessagingPanel";
 
@@ -28,7 +28,8 @@ const ROLE_OPTIONS = [
 const CompanyDashboard = () => {
   const { user, role } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
   const [company, setCompany] = useState<any>(null);
   const [roleRequests, setRoleRequests] = useState<any[]>([]);
   const [pushes, setPushes] = useState<any[]>([]);
@@ -42,8 +43,8 @@ const CompanyDashboard = () => {
   const [scheduleDuration, setScheduleDuration] = useState(30);
   const [scheduleMeetingLink, setScheduleMeetingLink] = useState("");
   const [scheduleNotes, setScheduleNotes] = useState("");
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
-  // Role request form
   const [roleForm, setRoleForm] = useState({
     role_title: "", role_type: "", seniority: "", num_hires: 1,
     responsibilities: "", must_have_skills: [] as string[], nice_to_have_skills: [] as string[],
@@ -51,6 +52,11 @@ const CompanyDashboard = () => {
   });
   const [skillInput, setSkillInput] = useState("");
   const [niceSkillInput, setNiceSkillInput] = useState("");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
   useEffect(() => {
     if (role && role !== "company") { navigate("/"); return; }
@@ -78,6 +84,14 @@ const CompanyDashboard = () => {
         const { data: cands } = await supabase.from("candidate_profiles").select("*").in("id", candidateIds);
         setPushedCandidates(cands || []);
       }
+
+      // Count unread messages
+      const { count } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .eq("recipient_id", user.id)
+        .eq("read", false);
+      setUnreadMessages(count || 0);
     }
     setLoading(false);
   };
@@ -150,6 +164,8 @@ const CompanyDashboard = () => {
   const inputClass = "w-full bg-background border border-border rounded px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary";
   const labelClass = "text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block";
 
+  const companyName = company?.company_name || "there";
+
   if (company?.status === "pending") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -207,7 +223,36 @@ const CompanyDashboard = () => {
           {/* Overview */}
           {activeTab === "overview" && (
             <div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              {/* Welcome bar */}
+              <div className="mb-8">
+                <h2 className="font-display text-[36px]">Welcome back, {companyName}.</h2>
+                <p className="text-[15px] text-muted-foreground mt-1">Here's your hiring overview.</p>
+              </div>
+
+              {/* Quick action cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="card-surface p-6 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => { setActiveTab("roles"); setShowRoleForm(true); }}>
+                  <Briefcase size={20} className="text-primary mb-3" />
+                  <h3 className="font-display text-lg mb-1">NEW ROLE REQ</h3>
+                  <p className="text-xs text-muted-foreground mb-3">{roleRequests.filter(r => !["filled", "closed"].includes(r.status)).length} active</p>
+                  <span className="text-primary text-xs font-bold">Go →</span>
+                </div>
+                <div className="card-surface p-6 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("talent")}>
+                  <Users size={20} className="text-primary mb-3" />
+                  <h3 className="font-display text-lg mb-1">VIEW TALENT</h3>
+                  <p className="text-xs text-muted-foreground mb-3">{pushedCandidates.length} profiles</p>
+                  <span className="text-primary text-xs font-bold">Go →</span>
+                </div>
+                <div className="card-surface p-6 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("messages")}>
+                  <MessageSquare size={20} className="text-primary mb-3" />
+                  <h3 className="font-display text-lg mb-1">MESSAGES</h3>
+                  <p className="text-xs text-muted-foreground mb-3">{unreadMessages} unread</p>
+                  <span className="text-primary text-xs font-bold">Go →</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   { label: "Active Requests", value: roleRequests.filter(r => !["filled", "closed"].includes(r.status)).length },
                   { label: "Candidates in Review", value: pushes.filter(p => p.company_action === "none").length },
@@ -219,10 +264,6 @@ const CompanyDashboard = () => {
                     <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mt-1">{card.label}</div>
                   </div>
                 ))}
-              </div>
-              <div className="flex gap-3">
-                <Button onClick={() => { setActiveTab("roles"); setShowRoleForm(true); }} size="sm" className="bg-primary text-primary-foreground font-bold">New Role Request</Button>
-                <Button onClick={() => setActiveTab("talent")} variant="outline" size="sm">View Talent Pool</Button>
               </div>
             </div>
           )}
@@ -458,9 +499,7 @@ const CompanyDashboard = () => {
           )}
 
           {/* Messages */}
-          {activeTab === "messages" && (
-            <MessagingPanel />
-          )}
+          {activeTab === "messages" && <MessagingPanel />}
 
           {/* Settings */}
           {activeTab === "settings" && company && (
