@@ -49,6 +49,38 @@ export type Database = {
           },
         ]
       }
+      candidate_photos: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          display_order: number | null
+          id: string
+          photo_url: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          photo_url: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_photos_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_portfolio_links: {
         Row: {
           candidate_id: string
