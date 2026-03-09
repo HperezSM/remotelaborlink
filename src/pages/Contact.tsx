@@ -1,7 +1,7 @@
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Calendar, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
 
 const Contact = () => {
