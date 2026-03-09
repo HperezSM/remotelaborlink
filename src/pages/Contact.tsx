@@ -7,6 +7,15 @@ import { SocialIconRow, contactInfo } from "@/components/SocialLinks";
 const Contact = () => {
   const [form, setForm] = useState({ name: "", company: "", email: "", type: "", message: "" });
 
+  useEffect(() => {
+    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://assets.calendly.com/assets/external/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
