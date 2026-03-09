@@ -145,6 +145,11 @@ const CompanySignup = () => {
                 {loading ? "Creating account..." : "Create Company Account"}
               </Button>
             </form>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-card px-3 text-muted-foreground font-mono uppercase">or</span></div>
+            </div>
+            <GoogleSSOButton label="Sign up with Google" />
             <p className="mt-4 text-xs text-muted-foreground text-center">
               Already have an account?{" "}
               <Link to="/login/company" className="text-primary hover:underline">Log in</Link>
