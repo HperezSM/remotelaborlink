@@ -108,6 +108,9 @@ const Navbar = () => {
             <Button asChild variant="outline" size="default" className="w-full">
               <Link to="/signup/company" onClick={() => setMobileOpen(false)}>Hire Talent</Link>
             </Button>
+            <Button asChild variant="outline" size="default" className="w-full border-border text-foreground">
+              <Link to="/login/talent" onClick={() => setMobileOpen(false)}>Talent Login</Link>
+            </Button>
             <Button asChild size="default" className="w-full bg-primary text-primary-foreground font-bold">
               <Link to="/login/company" onClick={() => setMobileOpen(false)}>Client Portal</Link>
             </Button>

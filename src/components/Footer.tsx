@@ -26,6 +26,7 @@ const Footer = () => (
           <div className="space-y-2 text-sm text-muted-foreground">
             <Link to="/for-companies" className="block hover:text-foreground transition-colors">For Companies</Link>
             <Link to="/for-talent" className="block hover:text-foreground transition-colors">For Talent</Link>
+            <Link to="/login/talent" className="block hover:text-foreground transition-colors">Talent Login</Link>
           </div>
         </div>
         <div>
