@@ -5,6 +5,7 @@ import { signUpCandidate } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import PasswordRequirements, { isPasswordValid } from "@/components/PasswordRequirements";
+import GoogleSSOButton from "@/components/GoogleSSOButton";
 
 const CandidateSignup = () => {
   const [fullName, setFullName] = useState("");
