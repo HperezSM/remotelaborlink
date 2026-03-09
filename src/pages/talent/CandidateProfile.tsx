@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PageLayout from "@/components/PageLayout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Briefcase, DollarSign, Globe, Clock, ExternalLink, FileText, Github, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  MapPin, Briefcase, DollarSign, Globe, ExternalLink, FileText,
+  Github, Eye, Pencil, Download, Play, Linkedin, X
+} from "lucide-react";
 
 const CandidateProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,37 +17,35 @@ const CandidateProfile = () => {
   const [loading, setLoading] = useState(true);
   const [portfolioLinks, setPortfolioLinks] = useState<any[]>([]);
   const [certifications, setCertifications] = useState<any[]>([]);
-  const [profileViews, setProfileViews] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+
+  const isOwner = profile && user && profile.user_id === user.id;
+  const isAdmin = role === "admin";
+  const isCompany = role === "company";
+  const isCandidate = role === "candidate";
 
   useEffect(() => {
     if (!id) return;
     const fetchAll = async () => {
-      const [profileRes, linksRes, certsRes] = await Promise.all([
+      const [profileRes, linksRes, certsRes, photosRes] = await Promise.all([
         supabase.from("candidate_profiles").select("*").eq("id", id).single(),
         supabase.from("candidate_portfolio_links").select("*").eq("candidate_id", id),
         supabase.from("candidate_certifications").select("*").eq("candidate_id", id),
+        supabase.from("candidate_photos").select("*").eq("candidate_id", id).order("display_order"),
       ]);
       setProfile(profileRes.data);
       setPortfolioLinks(linksRes.data || []);
       setCertifications(certsRes.data || []);
+      setPhotos(photosRes.data || []);
 
-      // Log profile view for companies
       if (user && role === "company") {
         const { data: company } = await supabase.from("companies").select("id").eq("user_id", user.id).single();
         if (company) {
-          await supabase.from("profile_views").insert({
-            candidate_id: id,
-            company_id: company.id,
-          });
+          await supabase.from("profile_views").insert({ candidate_id: id, company_id: company.id });
         }
       }
-
-      // Fetch profile views for candidate
-      if (user && role === "candidate") {
-        const { data: views } = await supabase.from("profile_views").select("viewed_at").eq("candidate_id", id);
-        setProfileViews(views || []);
-      }
-
       setLoading(false);
     };
     fetchAll();
@@ -52,10 +54,10 @@ const CandidateProfile = () => {
   if (loading) {
     return (
       <PageLayout>
-        <div className="py-12 container mx-auto px-4 max-w-3xl space-y-6">
-          <Skeleton className="h-32 w-full rounded-lg" />
+        <div className="py-12 container mx-auto px-4 max-w-[900px] space-y-6">
           <Skeleton className="h-48 w-full rounded-lg" />
           <Skeleton className="h-32 w-full rounded-lg" />
+          <Skeleton className="h-64 w-full rounded-lg" />
         </div>
       </PageLayout>
     );
@@ -72,31 +74,127 @@ const CandidateProfile = () => {
     );
   }
 
-  const isAdmin = role === "admin";
+  const effectiveRole = isPreviewMode ? "company" : role;
+  const showEdit = isOwner && !isPreviewMode;
   const isLoomUrl = profile.loom_video_url?.includes("loom.com/share/");
   const loomEmbedUrl = isLoomUrl ? profile.loom_video_url.replace("/share/", "/embed/") : null;
+  const bioFirstSentence = profile.bio?.split(/[.!?]/)?.[0]?.trim();
 
-  const getAvailabilityColor = () => {
-    if (profile.availability === "Immediate") return "status-active";
-    if (profile.availability === "2 weeks") return "status-screening";
-    return "status-pending";
+  const getAvailabilityStyle = () => {
+    if (profile.availability === "Immediate") return "bg-[hsl(var(--success)/0.12)] text-[hsl(var(--success))]";
+    if (profile.availability === "2 weeks") return "bg-[hsl(var(--warning)/0.12)] text-[hsl(var(--warning))]";
+    return "bg-muted/30 text-muted-foreground";
+  };
+
+  const getAvailabilityLabel = () => {
+    if (profile.availability === "Immediate") return "● Available Now";
+    if (profile.availability === "2 weeks") return "● Available in 2 weeks";
+    return "● Open to Offers";
   };
 
   const allLinks = [
-    profile.linkedin_url && { type: "linkedin", url: profile.linkedin_url, label: "LinkedIn" },
-    (profile as any).github_url && { type: "github", url: (profile as any).github_url, label: "GitHub" },
-    profile.portfolio_url && { type: "portfolio", url: profile.portfolio_url, label: "Portfolio" },
-    profile.portfolio_link && { type: "other", url: profile.portfolio_link, label: "Projects" },
-    ...portfolioLinks.map((l: any) => ({ type: l.link_type, url: l.url, label: l.label || l.link_type })),
+    profile.linkedin_url && { type: "linkedin", url: profile.linkedin_url, label: "LinkedIn", icon: Linkedin },
+    profile.github_url && { type: "github", url: profile.github_url, label: "GitHub", icon: Github },
+    profile.portfolio_url && { type: "portfolio", url: profile.portfolio_url, label: "Portfolio", icon: Globe },
+    profile.portfolio_link && { type: "other", url: profile.portfolio_link, label: "Projects", icon: ExternalLink },
+    ...portfolioLinks.map((l: any) => ({ type: l.link_type, url: l.url, label: l.label || l.link_type, icon: Globe })),
+  ].filter(Boolean) as { type: string; url: string; label: string; icon: any }[];
+
+  const statPills = [
+    profile.years_experience && `${profile.years_experience} Exp`,
+    profile.seniority_level,
+    profile.expected_rate_usd && `$${Number(profile.expected_rate_usd).toLocaleString()}/mo`,
+    profile.work_type_preference,
   ].filter(Boolean);
 
   return (
     <PageLayout>
-      <div className="py-12 container mx-auto px-4 max-w-3xl">
-        {/* Top Card */}
-        <div className="card-surface p-8 relative">
+      {/* Preview banner */}
+      {isPreviewMode && (
+        <div className="bg-primary text-primary-foreground px-[5%] py-3 text-center text-sm font-bold flex items-center justify-center gap-3">
+          You're viewing your profile as a company sees it.
+          <button onClick={() => setIsPreviewMode(false)} className="underline font-bold">Exit Preview</button>
+        </div>
+      )}
+
+      {/* Section A — Hero Card */}
+      <section className="bg-card border-b border-border">
+        <div className="container mx-auto px-4 max-w-[900px] py-12">
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            {/* Photo */}
+            <div className="shrink-0">
+              {profile.profile_photo_url ? (
+                <img src={profile.profile_photo_url} alt={profile.full_name}
+                  className="w-[120px] h-[120px] rounded-full object-cover border-[3px] border-primary" />
+              ) : (
+                <div className="w-[120px] h-[120px] rounded-full bg-muted flex items-center justify-center border-[3px] border-primary">
+                  <span className="font-display text-3xl text-muted-foreground">
+                    {profile.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
+                  </span>
+                </div>
+              )}
+              <div className={`mt-3 text-center text-xs font-mono font-semibold px-3 py-1.5 rounded-full ${getAvailabilityStyle()}`}>
+                {getAvailabilityLabel()}
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="font-display text-5xl md:text-[52px] leading-none">{profile.full_name}</h1>
+                  <p className="text-lg font-bold text-primary mt-1">{(profile.roles_applied || []).join(" · ")}</p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1 mt-2">
+                    <MapPin size={14} /> {profile.city}, {profile.country}
+                  </p>
+                  {bioFirstSentence && (
+                    <p className="text-[15px] italic text-foreground/60 mt-2">{bioFirstSentence}.</p>
+                  )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="hidden sm:flex items-center gap-2 shrink-0">
+                  {showEdit && (
+                    <>
+                      <Button asChild variant="outline" size="sm"><Link to="/talent/profile/edit"><Pencil size={14} className="mr-1" /> Edit Profile</Link></Button>
+                      <Button variant="ghost" size="sm" onClick={() => setIsPreviewMode(true)}>Preview as Company</Button>
+                    </>
+                  )}
+                  {isAdmin && profile.resume_url && (
+                    <Button variant="outline" size="sm" onClick={async () => {
+                      const { data } = await supabase.storage.from("resumes").createSignedUrl(profile.resume_url, 60);
+                      if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                    }}><Download size={14} className="mr-1" /> Download CV</Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Stat pills */}
+              {statPills.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {statPills.map((pill) => (
+                    <span key={pill} className="bg-background border border-border rounded-full px-3.5 py-1.5 font-mono text-[11px] text-foreground">
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile action buttons */}
+          <div className="sm:hidden flex flex-wrap gap-2 mt-4">
+            {showEdit && (
+              <>
+                <Button asChild variant="outline" size="sm" className="flex-1"><Link to="/talent/profile/edit"><Pencil size={14} className="mr-1" /> Edit</Link></Button>
+                <Button variant="ghost" size="sm" className="flex-1" onClick={() => setIsPreviewMode(true)}>Preview</Button>
+              </>
+            )}
+          </div>
+
+          {/* Admin status badge */}
           {isAdmin && (
-            <span className={`absolute top-4 right-4 text-[10px] font-mono px-3 py-1 rounded-full font-semibold ${
+            <span className={`inline-block mt-4 text-[10px] font-mono px-3 py-1 rounded-full font-semibold ${
               profile.status === "active" ? "status-active" :
               profile.status === "rejected" ? "status-rejected" :
               profile.status === "screening" ? "status-screening" :
@@ -105,174 +203,185 @@ const CandidateProfile = () => {
               {profile.status?.replace("_", " ")}
             </span>
           )}
-          <div className="flex flex-col sm:flex-row items-start gap-6">
-            {profile.profile_photo_url ? (
-              <img src={profile.profile_photo_url} alt={profile.full_name} className="avatar-lg" />
-            ) : (
-              <div className="avatar-initials-lg">
-                {profile.full_name?.split(" ").map((n: string) => n.charAt(0)).join("").slice(0, 2)}
-              </div>
-            )}
-            <div className="flex-1">
-              <h1 className="font-display text-4xl mb-1">{profile.full_name}</h1>
-              <p className="text-lg text-muted-foreground font-medium mb-3">{(profile.roles_applied || []).join(" · ")}</p>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1"><MapPin size={14} /> {profile.city}, {profile.country}</span>
-                <span className="flex items-center gap-1"><Briefcase size={14} /> {profile.seniority_level}</span>
-                <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-semibold ${getAvailabilityColor()}`}>
-                  {profile.availability}
-                </span>
-                {profile.expected_rate_usd && (
-                  <span className="flex items-center gap-1"><DollarSign size={14} /> ${profile.expected_rate_usd}/mo</span>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
+      </section>
 
-        {/* Skills Strip */}
-        {profile.technical_skills?.length > 0 && (
-          <div className="mt-6">
-            <div className="flex flex-wrap gap-2">
+      {/* Section B — Skills Strip */}
+      {profile.technical_skills?.length > 0 && (
+        <section className="bg-background border-b border-border px-[5%] py-5">
+          <div className="container mx-auto max-w-[900px]">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// TOP SKILLS</span>
+            <div className="flex flex-wrap gap-2 overflow-x-auto">
               {profile.technical_skills.map((skill: string) => (
-                <span key={skill} className="text-xs px-3 py-1.5 rounded-full border border-primary text-primary font-mono font-semibold">
+                <span key={skill} className="border border-primary text-primary bg-transparent rounded-full px-3.5 py-1.5 font-mono text-[11px] font-semibold whitespace-nowrap">
                   {skill}
                 </span>
               ))}
             </div>
           </div>
-        )}
+        </section>
+      )}
 
-        {/* Portfolio Row */}
-        {allLinks.length > 0 && (
-          <div className="flex flex-wrap gap-3 mt-6">
-            {allLinks.map((link: any, i: number) => (
-              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                className="card-surface px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-                {link.type === "github" ? <Github size={14} /> : <Globe size={14} />}
-                {link.label}
-              </a>
-            ))}
-          </div>
-        )}
-
-        {/* Bio */}
-        {profile.bio && (
-          <div className="card-surface p-8 mt-6">
-            <h2 className="font-display text-xl mb-3">ABOUT</h2>
-            <p className="text-[15px] text-foreground/75 leading-relaxed">{profile.bio}</p>
-          </div>
-        )}
-
-        {/* Proud Achievement */}
-        {profile.proud_achievement && (
-          <div className="card-surface p-8 mt-6">
-            <h2 className="font-display text-xl mb-3">BEST WORK</h2>
-            <p className="text-[15px] text-foreground/75 leading-relaxed">{profile.proud_achievement}</p>
-          </div>
-        )}
-
-        {/* Details Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          {[
-            { label: "Experience", value: profile.years_experience },
-            { label: "Industries", value: (profile.industries || []).join(", ") },
-            { label: "Work Type", value: profile.work_type_preference },
-            { label: "English", value: profile.english_proficiency },
-            { label: "US Hours", value: (profile as any).us_hours_available },
-            { label: "Field of Study", value: (profile as any).field_of_study },
-          ].filter(d => d.value).map((d) => (
-            <div key={d.label} className="card-surface p-4">
-              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">{d.label}</div>
-              <div className="text-sm font-bold">{d.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Certifications */}
-        {certifications.length > 0 && (isAdmin || role === "company") && (
-          <div className="card-surface p-8 mt-6">
-            <h2 className="font-display text-xl mb-4">CERTIFICATIONS & CREDENTIALS</h2>
-            <div className="space-y-3">
-              {certifications.map((cert: any) => (
-                <div key={cert.id} className="flex items-center gap-3 card-surface p-4 border border-border">
-                  <div className="file-card-icon w-10 h-10">
-                    <FileText size={16} />
-                  </div>
-                  <span className="text-sm flex-1 truncate">{cert.file_name}</span>
-                  {isAdmin && (
-                    <button
-                      onClick={async () => {
-                        const { data } = await supabase.storage.from("certifications").createSignedUrl(cert.file_url, 60);
-                        if (data?.signedUrl) window.open(data.signedUrl, "_blank");
-                      }}
-                      className="text-xs text-primary font-bold hover:underline border border-primary/30 rounded px-3 py-1.5"
-                    >
-                      Download
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Loom Video */}
-        {profile.loom_video_url && (
-          <div className="card-surface p-8 mt-6">
-            <h2 className="font-display text-xl mb-4">INTRODUCTION VIDEO</h2>
-            {loomEmbedUrl ? (
-              <div className="aspect-video rounded-lg overflow-hidden">
-                <iframe src={loomEmbedUrl} frameBorder="0" allowFullScreen className="w-full h-full" />
+      {/* Section C — Main Content */}
+      <section className="container mx-auto px-4 max-w-[900px] py-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+          {/* Left Column (3/5) */}
+          <div className="md:col-span-3 space-y-8">
+            {/* About */}
+            {profile.bio && (
+              <div>
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// ABOUT</span>
+                <p className="text-[15px] text-foreground/75 leading-relaxed">{profile.bio}</p>
               </div>
-            ) : (
-              <a href={profile.loom_video_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-bold">
-                <ExternalLink size={14} /> Watch Introduction
-              </a>
+            )}
+
+            {/* Best Work */}
+            {profile.proud_achievement && (
+              <div>
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// BEST WORK</span>
+                <div className="border-l-[3px] border-primary pl-5">
+                  <p className="text-[15px] italic text-foreground/70 leading-relaxed">{profile.proud_achievement}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Experience */}
+            <div>
+              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// EXPERIENCE</span>
+              <div className="space-y-0">
+                {[
+                  { label: "Years of Experience", value: profile.years_experience },
+                  { label: "Field of Study", value: profile.field_of_study },
+                  { label: "US Hours Availability", value: profile.us_hours_available },
+                ].filter(d => d.value).map((d) => (
+                  <div key={d.label} className="flex items-center justify-between py-3 border-b border-border text-sm">
+                    <span className="text-muted-foreground">{d.label}</span>
+                    <span className="font-bold">{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Certifications */}
+            {(isAdmin || isCompany || isOwner) && (
+              <div>
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// CERTIFICATIONS & CREDENTIALS</span>
+                {certifications.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No certifications added yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {certifications.map((cert: any) => (
+                      <div key={cert.id} className="bg-card border border-border rounded-lg p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+                          <FileText size={16} className="text-primary" />
+                        </div>
+                        <span className="text-sm flex-1 truncate">{cert.file_name}</span>
+                        {(isAdmin) && (
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const { data } = await supabase.storage.from("certifications").createSignedUrl(cert.file_url, 60);
+                            if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                          }}>
+                            <Download size={12} className="mr-1" /> Download
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Photo Strip */}
+            {photos.length > 0 && (
+              <div>
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-3">// PHOTOS</span>
+                <div className="flex gap-3 overflow-x-auto">
+                  {photos.slice(0, 3).map((photo: any) => (
+                    <img key={photo.id} src={photo.photo_url} alt="Portfolio"
+                      onClick={() => setLightboxUrl(photo.photo_url)}
+                      className="w-[180px] h-[130px] object-cover rounded-lg border border-border cursor-pointer hover:border-primary transition-colors" />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-        )}
 
-        {/* Admin-only: Resume download */}
-        {isAdmin && profile.resume_url && (
-          <div className="file-card mt-6">
-            <div className="file-card-icon">
-              <FileText size={20} />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-foreground">Resume</p>
-              <p className="text-[11px] font-mono text-muted-foreground">PDF · Admin only</p>
-            </div>
-            <button
-              onClick={async () => {
-                const { data } = await supabase.storage.from("resumes").createSignedUrl(profile.resume_url, 60);
-                if (data?.signedUrl) window.open(data.signedUrl, "_blank");
-              }}
-              className="text-xs text-primary font-bold hover:underline border border-primary/30 rounded px-3 py-1.5"
-            >
-              Download
-            </button>
-          </div>
-        )}
-
-        {/* Profile Views (visible to candidate) */}
-        {role === "candidate" && profileViews.length > 0 && (
-          <div className="card-surface p-8 mt-6">
-            <h2 className="font-display text-xl mb-4 flex items-center gap-2">
-              <Eye size={18} /> PROFILE VIEWS
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">{profileViews.length} view{profileViews.length !== 1 ? "s" : ""} this period</p>
-            <div className="space-y-2">
-              {profileViews.slice(0, 10).map((v: any, i: number) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground py-1 border-b border-border">
-                  <Eye size={12} />
-                  Viewed on {new Date(v.viewed_at).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" })} at {new Date(v.viewed_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          {/* Right Column (2/5) */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Details card */}
+            <div className="bg-card border border-border rounded-lg p-7 space-y-0">
+              {[
+                { label: "English Level", value: profile.english_proficiency },
+                { label: "Availability", value: profile.availability },
+                { label: "Work Type", value: profile.work_type_preference },
+                { label: "Salary", value: profile.expected_rate_usd ? `$${Number(profile.expected_rate_usd).toLocaleString()}/mo` : null },
+                { label: "Employment", value: profile.employment_status },
+              ].filter(d => d.value).map((d, i, arr) => (
+                <div key={d.label} className={`flex items-center justify-between py-3 text-sm ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
+                  <span className="text-muted-foreground">{d.label}</span>
+                  <span className="font-bold text-foreground">{d.value}</span>
                 </div>
               ))}
             </div>
+
+            {/* Links card */}
+            {allLinks.length > 0 && (
+              <div className="bg-card border border-border rounded-lg p-7">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-4">// LINKS</span>
+                <div className="space-y-3">
+                  {allLinks.map((link, i) => (
+                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-3 text-sm text-foreground/70 hover:text-foreground transition-colors group">
+                      <link.icon size={16} className="text-primary" />
+                      <span className="flex-1">{link.label}</span>
+                      <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Video card */}
+            {profile.loom_video_url && (
+              <div className="bg-card border border-border rounded-lg p-7">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-4">// INTRODUCTION VIDEO</span>
+                {loomEmbedUrl ? (
+                  <div className="aspect-video rounded-lg overflow-hidden">
+                    <iframe src={loomEmbedUrl} frameBorder="0" allowFullScreen className="w-full h-full" />
+                  </div>
+                ) : (
+                  <a href={profile.loom_video_url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-sm text-primary hover:underline font-bold">
+                    <Play size={16} /> Watch on Loom
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Industries card */}
+            {profile.industries?.length > 0 && (
+              <div className="bg-card border border-border rounded-lg p-7">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-4">// INDUSTRIES</span>
+                <div className="flex flex-wrap gap-2">
+                  {profile.industries.map((ind: string) => (
+                    <span key={ind} className="border border-foreground/30 text-foreground/70 rounded-full px-3 py-1 font-mono text-[11px]">
+                      {ind}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </section>
+
+      {/* Lightbox */}
+      {lightboxUrl && (
+        <div className="fixed inset-0 z-50 bg-background/90 flex items-center justify-center p-4" onClick={() => setLightboxUrl(null)}>
+          <button className="absolute top-6 right-6 text-foreground" onClick={() => setLightboxUrl(null)}><X size={24} /></button>
+          <img src={lightboxUrl} alt="Full size" className="max-w-full max-h-[90vh] object-contain rounded-lg" />
+        </div>
+      )}
     </PageLayout>
   );
 };
