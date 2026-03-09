@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import {
   Eye, User, Pencil, Wrench, FileText, Link2, Image, Activity,
-  MessageCircle, Bell, ChevronRight, Upload, X, Trash2, ExternalLink, XCircle
+  MessageCircle, Bell, ChevronRight, Upload, X, Trash2, ExternalLink, XCircle, Download
 } from "lucide-react";
 
 type Tab = "overview" | "skills" | "certifications" | "portfolio" | "photos" | "applications" | "views" | "messages" | "notifications";
