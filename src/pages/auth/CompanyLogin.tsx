@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import { isLockedOut, recordFailedAttempt, resetAttempts, formatLockoutTime } from "@/lib/loginLockout";
+import GoogleSSOButton from "@/components/GoogleSSOButton";
 
 const CompanyLogin = () => {
   const [email, setEmail] = useState("");
@@ -131,6 +132,11 @@ const CompanyLogin = () => {
                 {loading ? "Logging in..." : "Log In"}
               </Button>
             </form>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-card px-3 text-muted-foreground font-mono uppercase">or</span></div>
+            </div>
+            <GoogleSSOButton label="Sign in with Google" />
             <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
               <p>
                 <Link to="/auth/forgot-password" className="text-primary hover:underline">Forgot your password?</Link>
