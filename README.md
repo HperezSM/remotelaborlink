@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# Remote LaborLink
 
-## Project info
+> Connecting US companies with pre-vetted, nearshore LATAM talent.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Stack](https://img.shields.io/badge/Stack-TypeScript-blue)
+![Stage](https://img.shields.io/badge/Stage-Private%20Beta-orange)
 
-## How can I edit this code?
+## What It Is
 
-There are several ways of editing your application.
+Remote LaborLink is a nearshore staffing SaaS platform built to solve a real problem: US companies need fast access to reliable, English-proficient technical and operational talent — without the overhead of traditional recruiting agencies.
 
-**Use Lovable**
+We connect them with pre-vetted professionals from Guatemala and broader LATAM, at nearshore rates, with cultural alignment and timezone overlap.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## The Problem We're Solving
 
-Changes made via Lovable will be committed automatically to this repo.
+- US hiring is slow, expensive, and often misaligned for remote-first roles
+- LATAM has deep talent pools that are systematically underutilized
+- Existing platforms (Upwork, Toptal) aren't built for dedicated nearshore team models
 
-**Use your preferred IDE**
+## Product Vision
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+A platform where US companies can:
+1. Browse pre-vetted LATAM talent profiles by role, skill, and availability
+2. Run a streamlined vetting and onboarding flow
+3. Manage placements, communication, and billing in one place
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Tech Stack
 
-Follow these steps:
+- **Frontend:** TypeScript / React
+- **Backend:** Node.js
+- **Integrations:** Google Workspace, communication APIs
+- **Built with:** Lovable, n8n automation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Status
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+| Milestone | Status |
+|---|---|
+| Platform MVP | 🟡 In Development |
+| First 10 placements | 🔲 Upcoming |
+| Payment integration | 🔲 Upcoming |
+| Public launch | 🔲 Planned Q3 2026 |
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Part of a Bigger Vision
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Remote LaborLink is one of two products being built under a broader mission: creating economic opportunity for LATAM professionals while delivering measurable value to US companies.
 
-**Edit a file directly in GitHub**
+See also: [PM Command Center AI / Orion PM](https://github.com/HperezSM/orion-pm)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Author
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+**Herber Giovanni Perez** — Senior Technical PM based in Guatemala City 🇬🇹
+[LinkedIn](https://linkedin.com/in/herber-perez) · [GitHub](https://github.com/HperezSM)
